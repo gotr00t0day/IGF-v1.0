@@ -2,8 +2,8 @@
 
 ## IGF Gathers information about a target and its environment.
 
-DNS LOOKUP
-Subdomains
+*DNS LOOKUP
+*Subdomains
 Directories and Filenames
 Ports and Services
 HTTP requests

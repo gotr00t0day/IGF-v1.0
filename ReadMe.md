@@ -4,6 +4,11 @@ IGF Gathers information about a target and its environment.
 
 # INSTALLATION
 
-cd /igf
+git clone https://github.com/gotr00t0day/IGF-v1.0.git
 
-git clone 
+cd IGF-v1.0
+
+
+# USAGE
+
+./igf.py

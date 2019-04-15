@@ -2,7 +2,7 @@
 
 ## IGF Gathers information about a target and its environment.
 
-![alt text] https://github.com/gotr00t0day/IGF-v1.0/blob/master/Screenshot%20at%202019-04-14%2003-40-37.png
+![alt text]https://github.com/gotr00t0day/IGF-v1.0/blob/master/Screenshot%20at%202019-04-14%2003-40-37.png
 
 # INSTALLATION
 

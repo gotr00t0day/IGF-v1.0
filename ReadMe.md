@@ -2,6 +2,16 @@
 
 ## IGF Gathers information about a target and its environment.
 
+DNS LOOKUP
+Subdomains
+Directories and Filenames
+Ports and Services
+HTTP requests
+Whois information
+Domain to IP converter
+
+More to come in the next release.
+
 ![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF.png)
 
 ![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF2.png)

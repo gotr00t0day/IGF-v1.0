@@ -4,6 +4,8 @@
 
 ![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF.png)
 
+![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF2.png)
+
 # INSTALLATION
 
 requires Python 3

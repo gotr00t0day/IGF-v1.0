@@ -10,7 +10,7 @@ HTTP requests<br/>
 Whois information<br/>
 Domain to IP converter<br/>
 
-<b>More to come in the next release.
+<b>More to come in the next release.</b>
 
 ![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF.png)
 

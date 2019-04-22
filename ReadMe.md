@@ -1,4 +1,4 @@
-# IGF
+# IGF (Information Gathering Framework)
 
 ## IGF Gathers information about a target and its environment.
 

@@ -1,4 +1,4 @@
-# IGF V1.0
+# IGF
 
 ## IGF Gathers information about a target and its environment.
 

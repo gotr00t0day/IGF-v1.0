@@ -20,9 +20,9 @@ Domain to IP converter<br/>
 
 requires Python 3
 
-git clone https://github.com/gotr00t0day/IGF-v1.0.git
+git clone https://github.com/gotr00t0day/IGF.git
 
-cd IGF-v1.0
+cd IGF
 
 chmod +x igf.py
 

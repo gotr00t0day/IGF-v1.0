@@ -14,7 +14,7 @@ import ipaddress
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v0.1 by c0deninja           #
+# IGF - Information Gathering Framework v1.0 by c0deninja           #
 #                                                                   #
 # Installation: pip install dnspython, pip install fake-useragent   #
 #                                                                   # 

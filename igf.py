@@ -4,19 +4,19 @@ from colorama import Fore, Back, Style
 from urllib.request import urlopen
 from fake_useragent import UserAgent
 import socket, time, os, dns.resolver, sys, urllib, urllib.request
-import requests, io 
+import requests, io, sys
 import ipaddress
 import whois
 import http.client
 import ftplib
-import ipaddress
-
+import ssl
+import re
 
 #####################################################################
 #                                                                   #
 # IGF - Information Gathering Framework v1.0 by c0deninja           #
 #                                                                   #
-# Installation: pip install dnspython, pip install fake-useragent   #
+# Installation: pip install dnspython, fake-useragent, python-whois #
 #                                                                   # 
 #####################################################################
 
@@ -30,10 +30,63 @@ banner = """
 ░██░   ░▒▓███▀▒   ░▒█░    
 ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.0
+ ▒ ░   ░ ░   ░     ░ ░   v1.1
  ░           ░                                        
 
 """
+
+def smtpenum():
+	wordlist = input("Wordlist: ")
+	host = input("Host: ")
+	port = input("Port: ")
+	
+	f = open(wordlist, 'rb')
+	smtplist = f.readlines()
+	
+	print ("********************")
+	print ("Host: " + host)
+	print ("Port: " + port)
+	print ("Wordlist: " + wordlist)
+	print ("Size: " + str(len(wordlist)))
+	print ("********************")
+	print ("\n")
+		
+	print ("Verifying Users, Please wait..." + "\n")
+		
+	try:
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((host, int(port)))	
+	except socket.error:
+		print ("Could not connect to host")
+	except TimeoutError:
+		print ("Connection timed out")
+		
+	try:
+		for users in smtplist:
+			userlist = users.strip()
+			s.sendall(b"VRFY " + userlist + b"\r\n")
+			response = s.recv(1024)
+			
+			if re.match(b"250", response):
+				print ("Found User: " + str(userlist))
+			elif re.match(b"550", response):
+				print ("{} NOT found".format(str(userlist)))
+	except ConnectionResetError:
+		print ("Connection reset by peer")
+	f.close()		
+	s.close()
+
+def filedownload():
+	site = input("URL of the file: ")
+	filename = input("Save file as: ")
+
+	headers={'User-Agent': 'Mozilla/5.0'}
+	req = requests.get(site, headers)
+
+	with open(filename, 'wb') as download:
+		download.write(req.content)
+	
+	print ("File {} has been downloaded".format(filename))
 
 def serviceban():
 	host = input("IP: ")
@@ -44,7 +97,7 @@ def serviceban():
 		data = s.recv(1024)
 		print (data.strip())
 		s.close()
-	except scoket.error:
+	except socket.error:
 		print ("Could not connect to host")
 
 def anonftp():
@@ -165,7 +218,25 @@ def grabthebanner():
 		sck.send(b"HEAD / HTTP/1.0\r\n\r\n")
 		data = sck.recv(1024)
 		sck.close()
-		print (data)
+		print (data.strip())
+		time.sleep(2)
+	except socket.error:
+		print (Fore.RED + "Host is not reachable")
+
+def grabthebannerssl():
+	host = input("Enter Host: ")
+	port = int(input("Enter Port: "))
+	try:
+		sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		ssock = ssl.wrap_socket(sck)
+		ssock.connect((host, port))
+		print ("STATUS: " + "host is up!" + "\n")
+		print ("Grabbing the banner please wait!" + "\n")
+		time.sleep(3)
+		ssock.send(b"HEAD / HTTP/1.0\r\n\r\n")
+		data = ssock.recv(1024)
+		ssock.close()
+		print (data.strip())
 		time.sleep(2)
 	except socket.error:
 		print (Fore.RED + "Host is not reachable")
@@ -187,6 +258,7 @@ def dirbrute():
 			if response == 200:
 				print (Fore.GREEN + "[+] Found: " + links)
 				time.sleep(2)
+	file.close()
 
 def dnslookup():
 	host = input("Enter Host: ")
@@ -201,7 +273,7 @@ def portscanner():
 	print ("\n")
 	print ("Scanning IP: " + ip + " please wait..." + "\n")
 	try:
-		for port in range(1, 1024):
+		for port in range(1, 6000):
 			sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			data = sck.connect_ex((ip, port))
 			if data == 0:
@@ -235,7 +307,11 @@ def webinfo():
 
 		prompt = input(Fore.WHITE + "IGF~# ")
 		if "1" in prompt:
-			grabthebanner()
+			ask = input("HTTP or HTTPS? ")
+			if "HTTPS" in ask:
+				grabthebannerssl()
+			else:
+				grabthebanner()
 		if "2" in prompt:
 			dirbrute()
 		if "3" in prompt:
@@ -263,22 +339,31 @@ def start():
 
 		print (Fore.WHITE + "[1]  Website Information")
 		print (Fore.WHITE + "[2]  Port Scanner")
-		print (Fore.WHITE + "[3]  IPv4 to IPv6")
+		print (Fore.WHITE + "[3]  SMTP Enumeration")
 		print (Fore.WHITE + "[4]  Anon FTP")
 		print (Fore.WHITE + "[5]  Service Banner")
+		print (Fore.WHITE + "[6]  Download a file")
+		print (Fore.WHITE + "[7]  IPv4 to IPv6")
+		print (Fore.RED +   "[X]  Exit")
 
 		print ("\n")
-		prompt = input("IGF~#: ")
+		prompt = input(Fore.WHITE + "IGF~#: ")
 		if "1" in prompt:
 			webinfo()
 		if "2" in prompt:
 			portscanner()
 		if "3" in prompt:
-			ipv4tov6()
+			smtpenum()
 		if "4" in prompt:
 			anonftp()
 		if "5" in prompt:
 			serviceban()
+		if "6" in prompt:
+			filedownload()
+		if "7" in prompt():
+			ipv4tov6()
+		if "exit" in prompt:
+			sys.exit(0)
 
 if __name__ == "__main__":
 	start()

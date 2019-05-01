@@ -30,3 +30,12 @@ chmod +x igf.py
 # USAGE
 
 ./igf.py
+
+# UPDATES
+
+## IGF V1.1
+
+1. Added SSL/TLS support to some scripts
+2. Added a file downloader 
+3. Added a SMTP Enumeration script
+4. Fixed a few bugs.

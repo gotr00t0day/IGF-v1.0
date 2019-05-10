@@ -26,6 +26,8 @@ cd IGF
 
 chmod +x igf.py
 
+pip3 install -r requirements.txt
+
 
 # USAGE
 

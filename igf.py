@@ -68,7 +68,7 @@ def wordpresscheck():
 			print ("Internal server error")	
 
 def cloudflarebypass():
-	domains = ['mail', 'ftp', 'mail', 'cpanel']
+	domains = ['mail', 'ftp', 'cpanel', 'ns1', 'ns2', 'whm', 'webmail']
 	site = input("Enter Website: ")
 	print ("\n")
 	try:

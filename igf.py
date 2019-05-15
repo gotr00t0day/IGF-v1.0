@@ -16,7 +16,7 @@ import re
 #                                                                   #
 # IGF - Information Gathering Framework v1.1 by c0deninja           #
 #                                                                   #
-# Installation: pip install dnspython, fake-useragent, python-whois #
+# Installation: pip3 install -r requirements.txt                    #
 #                                                                   # 
 #####################################################################
 

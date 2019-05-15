@@ -1,1 +1,5 @@
-dnspython ipaddress fake-useragent python-whois colorama
+dnspython 
+ipaddress 
+fake-useragent 
+python-whois 
+colorama

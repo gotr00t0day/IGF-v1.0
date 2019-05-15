@@ -14,7 +14,7 @@ import re
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v1.0 by c0deninja           #
+# IGF - Information Gathering Framework v1.1 by c0deninja           #
 #                                                                   #
 # Installation: pip install dnspython, fake-useragent, python-whois #
 #                                                                   # 
@@ -34,6 +34,88 @@ banner = """
  ░           ░                                        
 
 """
+
+def reversednslookup():
+	ip = input("Enter IP: ")
+	print("\n")
+	try:
+		reversedns = socket.gethostbyaddr(str(ip))
+		print(reversedns[0])
+	except socket.error:
+		print (Fore.RED + "Error")
+
+def wordpresscheck():
+	wp = ['wordpress', 'wp-content', 'wp-login', 'wp-login.php', 'wp-admin', 'wp', 'wp-config',
+	'wp-config.php', 'wp-mail.php', 'wp-load.php', 'wp-settings.php', 'wp-includes', 'wp-activate.php',
+	'wp-cron.php', 'wp-signup.php', 'wp-config-sample.php']
+
+	site = input("Enter website: ")
+	print ("\n")
+	
+	for wpress in wp:
+		wpress = wpress.strip()
+		wplinks = site + "/" + wpress
+		response = requests.get(wplinks)
+		if response.status_code == 200:
+			print (Fore.GREEN + "Wordpress directory has been found! {}".format(wplinks))
+		elif response.status_code == 429:
+			print ("Too many requests")
+		elif response.status_code == 400:
+			print ("Bad Request")
+		elif response.status_code == 403:
+			print ("Forbidden")
+		elif response.status_code == 500:
+			print ("Internal server error")	
+
+def cloudflarebypass():
+	domains = ['mail', 'ftp', 'mail', 'cpanel']
+	site = input("Enter Website: ")
+	print ("\n")
+	try:
+		ip = socket.gethostbyname(str(site))
+	except socket.error:
+		pass
+	
+	for subdomain in domains:
+		subdomains = subdomain.strip()
+		subsite = subdomains + site
+		try:
+			subip = socket.gethostbyname(subsite)
+			if subip is not ip:
+				print (Fore.GREEN + "Cloudflare has been bypassed!")
+				print (Fore.GREEN + "The real IP is {}".format(subip))
+				time.sleep(1)
+				webinfo()
+			else:
+				print ("Could not retrieve the real IP.")
+		except socket.error:
+			pass
+
+def adminpanelfind():
+	adminlist = ['admin', 'cpanel', 'phpmyadmin', 'login', 'login.php', 'wp-admin', 'cp', 'master', 'adm', 'member', 'control', 'webmaster', 
+'myadmin', 'admin_cp', 'admin_site', 'administratorlogin/', 'adm/', 'admin/account.php', 'admin/index.php', 'admin/login.php', 'admin/admin.php',
+'admin/account.php', 'admin_area/admin.php', 'admin_area/login.php', 'siteadmin/login.php', 'siteadmin/index.php', 'siteadmin/login.html',
+'admin/account.html', 'admin/index.html', 'admin/login.html', 'admin/admin.html']
+
+	site = input("Enter Website: ")
+	ua = UserAgent()
+	header = {'User-Agent':str(ua.chrome)}
+	for admin in adminlist:
+		admin = admin.strip()
+		link = site + "/" + admin
+		response = requests.get(link, headers=header)
+		if response.status_code == 200:
+			print ("Found {}".format(link))
+		elif response.status_code == 400:
+			print("{} Not Found".format(link))
+		elif response.status_code == 429:
+			print ("Too many requests")
+		elif response.status_code == 400:
+			print ("Bad Request")
+		elif response.status_code == 403:
+			print ("Forbidden")
+		elif response.status_code == 500:
+			print ("Internal server error")	
 
 def smtpenum():
 	wordlist = input("Wordlist: ")
@@ -207,9 +289,9 @@ def ipv4tov6():
 
 
 def grabthebanner():
-	host = input("Enter Host: ")
-	port = int(input("Enter Port: "))
 	try:
+		host = input("Enter Host: ")
+		port = int(input("Enter Port: "))
 		sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sck.connect((host, port))
 		print ("STATUS: " + "host is up!" + "\n")
@@ -222,6 +304,8 @@ def grabthebanner():
 		time.sleep(2)
 	except socket.error:
 		print (Fore.RED + "Host is not reachable")
+	except ValueError:
+		pass
 
 def grabthebannerssl():
 	host = input("Enter Host: ")
@@ -245,19 +329,20 @@ def dirbrute():
 	host = input("Enter Website: ")
 	wordlist = input("Enter Wordlist: ")
 	try:
-		file = open('wordlist.txt', 'r')
+		file = open(wordlist, 'r')
 		print (Fore.GREEN + "Found: " + wordlist)
 	except IOError:
 		print (Fore.RED + "Couldn't find " + wordlist)
 
 	with open(wordlist, 'r') as check:
 		for i in range(2000):
-			words = check.readline(10).strip()
+			words = check.readline().strip()
 			links = host+words
 			response = requests.get(links)	
 			if response == 200:
 				print (Fore.GREEN + "[+] Found: " + links)
-				time.sleep(2)
+			else:
+				print (Fore.RED + "[+] Not Found: " + links)
 	file.close()
 
 def dnslookup():
@@ -286,15 +371,16 @@ def portscanner():
 	except ipaddress.AddressValueError:
 		print ("IP address not allowed")
 
+
 def webinfo():
 	while True:
 		print (Fore.RED + banner)
 		print ("\033[0;0m[+] Web Information" + "\n")
 
-		print (Fore.WHITE + "[1]  Banner Grabber")
-		print (Fore.WHITE + "[2]  Directory brute")
-		print (Fore.WHITE + "[3]  Sub domain brute")
-		print (Fore.WHITE + "[4]  Convert domain to IP")
+		print (Fore.WHITE + "[1]  Banner Grabber" +       "[A] Find Admin Panel".rjust(35))
+		print (Fore.WHITE + "[2]  Directory brute" +      "[B] Cloudflare bypass".rjust(35))
+		print (Fore.WHITE + "[3]  Sub domain brute" +     "[C] Wordpress Dir Finder".rjust(37))
+		print (Fore.WHITE + "[4]  Convert domain to IP" + "[D] Reverse DNS lookup".rjust(31))
 		print (Fore.WHITE + "[5]  Get robots.txt")
 		print (Fore.WHITE + "[6]  Whois lookup tool")
 		print (Fore.WHITE + "[7]  HTTP HEAD request")
@@ -328,8 +414,18 @@ def webinfo():
 			getoptions()
 		if "9" in prompt:
 			dnslookup()
+		if "A" in prompt:
+			adminpanelfind()
+		if "B" in prompt:
+			cloudflarebypass()
+		if "C" in prompt:
+			wordpresscheck()
+		if "D" in prompt:
+			reversednslookup()
 		if "back" in prompt:
 			start()
+		if "exit" in prompt:
+			exit()
 
 def start():
 	while True:
@@ -360,7 +456,7 @@ def start():
 			serviceban()
 		if "6" in prompt:
 			filedownload()
-		if "7" in prompt():
+		if "7" in prompt:
 			ipv4tov6()
 		if "exit" in prompt:
 			sys.exit(0)

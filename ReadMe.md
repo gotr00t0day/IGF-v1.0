@@ -9,6 +9,11 @@ Ports and Services<br/>
 HTTP requests<br/>
 Whois information<br/>
 Domain to IP converter<br/>
+ReversE DNS lookup<br/>
+Cloudflare bypass<br/>
+Admin Panel Finder<br/>
+Find Wordpress directories<br/>
+
 
 <b>More to come in the next release.</b>
 
@@ -34,6 +39,14 @@ pip3 install -r requirements.txt
 ./igf.py
 
 # UPDATES
+
+## IGF V1.2
+
+1. Added: Bypass Cloudflare
+2. Added: Find Admin panels
+3. Added: Find Wordpress Directories
+4. Added: Reverse DNS lookup
+5. Bug Fixes
 
 ## IGF V1.1
 

@@ -16,7 +16,7 @@ import re
 #                                                                   #
 # IGF - Information Gathering Framework v1.1 by c0deninja           #
 #                                                                   #
-# Installation: pip3 install -r requirements.txt                    #
+# sudo pip3 install -r requirements.txt                             #
 #                                                                   # 
 #####################################################################
 
@@ -30,7 +30,7 @@ banner = """
 ░██░   ░▒▓███▀▒   ░▒█░    
 ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.1
+ ▒ ░   ░ ░   ░     ░ ░   v1.2
  ░           ░                                        
 
 """
@@ -59,63 +59,74 @@ def wordpresscheck():
 		if response.status_code == 200:
 			print (Fore.GREEN + "Wordpress directory has been found! {}".format(wplinks))
 		elif response.status_code == 429:
-			print ("Too many requests")
+			print (Fore.RED + "Too many requests")
+			webinfo()
 		elif response.status_code == 400:
-			print ("Bad Request")
-		elif response.status_code == 403:
-			print ("Forbidden")
+			print (Fore.RED + "Bad Request")
+			webinfo()
+		elif response.status_code:
+			print (Fore.RED + "Forbidden")
+			webinfo()
 		elif response.status_code == 500:
-			print ("Internal server error")	
+			print (Fore.RED + "Internal server error")	
+			webinfo()
 
 def cloudflarebypass():
 	domains = ['mail', 'ftp', 'cpanel', 'ns1', 'ns2', 'whm', 'webmail']
 	site = input("Enter Website: ")
 	print ("\n")
 	try:
-		ip = socket.gethostbyname(str(site))
-	except socket.error:
-		pass
-	
-	for subdomain in domains:
-		subdomains = subdomain.strip()
-		subsite = subdomains + site
+		site = input("Enter Website: ")
+		print ("\n")
 		try:
-			subip = socket.gethostbyname(subsite)
-			if subip is not ip:
-				print (Fore.GREEN + "Cloudflare has been bypassed!")
-				print (Fore.GREEN + "The real IP is {}".format(subip))
-				time.sleep(1)
-				webinfo()
-			else:
-				print ("Could not retrieve the real IP.")
+			ip = socket.gethostbyname(str(site))
 		except socket.error:
 			pass
+		for subdomain in domains:
+			subdomains = subdomain.strip()
+			subsite = subdomains + site
+			try:
+				subip = socket.gethostbyname(subsite)
+				if subip is not ip:
+					print (Fore.GREEN + "Cloudflare has been bypassed!")
+					print (Fore.GREEN + "The real IP is {}".format(subip))
+					time.sleep(1)
+					webinfo()
+				else:
+					print ("Could not retrieve the real IP.")
+			except socket.error:
+				pass
+	except requests.exceptions.MissingSchema:
+		print ("Please use: caca.com")
 
 def adminpanelfind():
 	adminlist = ['admin', 'cpanel', 'phpmyadmin', 'login', 'login.php', 'wp-admin', 'cp', 'master', 'adm', 'member', 'control', 'webmaster', 
 'myadmin', 'admin_cp', 'admin_site', 'administratorlogin/', 'adm/', 'admin/account.php', 'admin/index.php', 'admin/login.php', 'admin/admin.php',
 'admin/account.php', 'admin_area/admin.php', 'admin_area/login.php', 'siteadmin/login.php', 'siteadmin/index.php', 'siteadmin/login.html',
 'admin/account.html', 'admin/index.html', 'admin/login.html', 'admin/admin.html']
-
-	site = input("Enter Website: ")
-	ua = UserAgent()
-	header = {'User-Agent':str(ua.chrome)}
-	for admin in adminlist:
-		admin = admin.strip()
-		link = site + "/" + admin
-		response = requests.get(link, headers=header)
-		if response.status_code == 200:
-			print ("Found {}".format(link))
-		elif response.status_code == 400:
-			print("{} Not Found".format(link))
-		elif response.status_code == 429:
-			print ("Too many requests")
-		elif response.status_code == 400:
-			print ("Bad Request")
-		elif response.status_code == 403:
-			print ("Forbidden")
-		elif response.status_code == 500:
-			print ("Internal server error")	
+	try:
+		site = input("Enter Website: ")
+		print ("\n")
+		ua = UserAgent()
+		header = {'User-Agent':str(ua.chrome)}
+		for admin in adminlist:
+			admin = admin.strip()
+			link = site + "/" + admin
+			response = requests.get(link, headers=header)
+			if response.status_code == 200:
+				print ("Found {}".format(link))
+			elif response.status_code == 400:
+				print("{} Not Found".format(link))
+			elif response.status_code == 429:
+				print ("Too many requests")
+			elif response.status_code == 400:
+				print ("Bad Request")
+			elif response.status_code == 403:
+				print ("Forbidden")
+			elif response.status_code == 500:
+				print ("Internal server error")	
+	except requests.exceptions.MissingSchema:
+		print (Fore.RED + "Please use http:// or https://")
 
 def smtpenum():
 	wordlist = input("Wordlist: ")
@@ -235,6 +246,8 @@ def getoptions():
 	except socket.gaierror:
 		print (Fore.RED + "Name or service not known")
 		time.sleep(2)
+	except http.client.InvalidURL:
+		print (Fore.RED + "Please use: site.com or www.site.com")
 
 def gethead():
 	try:
@@ -245,6 +258,8 @@ def gethead():
 		time.sleep(2)
 	except socket.gaierror:
 		print (Fore.RED + "Name or service not known")
+	except requests.exceptions.MissingSchema:
+		print (Fore.RED + "Please use http or https://site.com")
 
 def whoistool():
 	try:
@@ -267,10 +282,13 @@ def getrobot():
 		print (Fore.RED + "Name or service not known")
 	except urllib.error.URLError:
 		print (Fore.RED + "Name or service not known")
+	except ValueError:
+		print(Fore.RED + "Unknown URL type, please use: http://site.com")
 
 
 def ipaddressresolv():
 	try:
+		print ("EX: site.com")
 		host = input("Website: ") #Ex: use site.com format
 		print ("\n")
 		print (Fore.GREEN + "IPv4 Address: " + socket.gethostbyname(host))
@@ -333,6 +351,7 @@ def dirbrute():
 		print (Fore.GREEN + "Found: " + wordlist)
 	except IOError:
 		print (Fore.RED + "Couldn't find " + wordlist)
+		pass
 
 	with open(wordlist, 'r') as check:
 		for i in range(2000):
@@ -346,12 +365,17 @@ def dirbrute():
 	file.close()
 
 def dnslookup():
-	host = input("Enter Host: ")
-	print ("\n")
-	info = dns.resolver.query(host, 'MX')
-	for rdata in info:
-		print (Fore.GREEN + "Host ", rdata.exchange, 'has preference', rdata.preference)
-	time.sleep(2)
+	try:
+		host = input("Enter Host: ")
+		print ("\n")
+		info = dns.resolver.query(host, 'MX')
+		for rdata in info:
+			print (Fore.GREEN + "Host ", rdata.exchange, 'has preference', rdata.preference)
+			time.sleep(2)
+	except dns.resolver.NoAnswer:
+		print (Fore.RED + "Please use: site.com")
+	except dns.resolver.NXDOMAIN:
+		print (Fore.RED + "Please use: site.com")
 
 def portscanner():
 	ip = input("Enter IP to scan: ")

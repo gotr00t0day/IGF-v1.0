@@ -16,7 +16,7 @@ import re
 #                                                                   #
 # IGF - Information Gathering Framework v1.1 by c0deninja           #
 #                                                                   #
-# sudo pip3 install -r requirements.txt                             #
+# pip3 install -r requirements.txt                                  #
 #                                                                   # 
 #####################################################################
 
@@ -64,7 +64,7 @@ def wordpresscheck():
 		elif response.status_code == 400:
 			print (Fore.RED + "Bad Request")
 			webinfo()
-		elif response.status_code:
+		elif response.status_code == 403:
 			print (Fore.RED + "Forbidden")
 			webinfo()
 		elif response.status_code == 500:
@@ -72,7 +72,7 @@ def wordpresscheck():
 			webinfo()
 
 def cloudflarebypass():
-	domains = ['webmail', 'ftp', 'mail', 'cpanel', 'ns1', 'ns2', 'whm']
+	domains = ['mail', 'ftp', 'mail', 'cpanel']
 	try:
 		site = input("Enter Website: ")
 		print ("\n")
@@ -347,20 +347,42 @@ def dirbrute():
 	try:
 		file = open(wordlist, 'r')
 		print (Fore.GREEN + "Found: " + wordlist)
+		file.close()
 	except IOError:
 		print (Fore.RED + "Couldn't find " + wordlist)
 		pass
+	
+	ua = UserAgent()
+	header = {'User-Agent':str(ua.chrome)}
 
-	with open(wordlist, 'r') as check:
-		for i in range(2000):
-			words = check.readline().strip()
-			links = host+words
-			response = requests.get(links)	
-			if response == 200:
-				print (Fore.GREEN + "[+] Found: " + links)
-			else:
-				print (Fore.RED + "[+] Not Found: " + links)
-	file.close()
+	with open(wordlist, 'r') as f:
+		dirblist = f.readlines()
+	try:
+		for lines in dirblist:
+			dirlines = lines.strip()
+			links = host + dirlines
+			response = requests.get(links, headers=header)
+			if response.status_code == 200:
+				print ("Found: {}".format(links))
+			elif response.status_code == 429:
+				print (Fore.RED + "Too many requests")
+				webinfo()
+			elif response.status_code == 400:
+				print (Fore.RED + "Bad Request")
+				webinfo()
+			elif response.status_code == 403:
+				print (Fore.RED + "Forbidden")
+				webinfo()
+			elif response.status_code == 500:
+				print (Fore.RED + "Internal server error")	
+				webinfo()
+			else: 
+				print ("Not Found: {}".format(links))
+
+	except requests.exceptions.MissingSchema:
+		print (Fore.RED + "Please use: http or https://www.site.com/")
+	except socket.gaierror:
+		print (Fore.RED + "Name or service not known")
 
 def dnslookup():
 	try:

@@ -72,7 +72,7 @@ def wordpresscheck():
 			webinfo()
 
 def cloudflarebypass():
-	domains = ['webmail', 'ftp', 'mail', 'cpanel']
+	domains = ['webmail', 'ftp', 'mail', 'cpanel', 'ns1', 'ns2', 'whm']
 	try:
 		site = input("Enter Website: ")
 		print ("\n")

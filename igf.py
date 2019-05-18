@@ -11,6 +11,7 @@ import http.client
 import ftplib
 import ssl
 import re
+import json
 
 #####################################################################
 #                                                                   #
@@ -34,6 +35,17 @@ banner = """
  ░           ░                                        
 
 """
+
+def geolocation():
+	# IP Geolocation by Sir809 (gotr00t? member)
+    ip = input("IP:> ")
+    print('\n')
+    url = ("https://ipinfo.io/{}/json".format(ip))
+    v =  urllib.request.urlopen(url)
+    j = json.loads(v.read())
+
+    for dato in j:
+        print(dato + ": " +j[dato])
 
 def reversednslookup():
 	ip = input("Enter IP: ")
@@ -484,6 +496,7 @@ def start():
 		print (Fore.WHITE + "[5]  Service Banner")
 		print (Fore.WHITE + "[6]  Download a file")
 		print (Fore.WHITE + "[7]  IPv4 to IPv6")
+		print (Fore.WHITE + "[8]  IP Geolocation")
 		print (Fore.RED +   "[X]  Exit")
 
 		print ("\n")
@@ -502,6 +515,8 @@ def start():
 			filedownload()
 		if "7" in prompt:
 			ipv4tov6()
+		if "8" in prompt:
+			geolocation()
 		if "exit" in prompt:
 			sys.exit(0)
 

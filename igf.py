@@ -37,7 +37,7 @@ banner = """
 """
 
 def geolocation():
-	# IP Geolocation by Sir809 (gotr00t? member)
+    # IP Geolocation by Sir809 (gotr00t? member)
     ip = input("IP:> ")
     print('\n')
     url = ("https://ipinfo.io/{}/json".format(ip))

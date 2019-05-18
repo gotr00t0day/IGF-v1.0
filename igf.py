@@ -15,7 +15,7 @@ import json
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v1.1 by c0deninja           #
+# IGF - Information Gathering Framework v1.2 by c0deninja           #
 #                                                                   #
 # pip3 install -r requirements.txt                                  #
 #                                                                   # 

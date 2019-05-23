@@ -44,10 +44,6 @@ def shodansearch():
 
 	if ask == "yes":
 		pass
-	elif ask == "no":
-		start()
-	elif ask == '':
-		start()
 	else:
 		start()
 

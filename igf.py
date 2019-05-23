@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
 from colorama import Fore, Back, Style
+from shodan import Shodan
 from urllib.request import urlopen
 from fake_useragent import UserAgent
 import socket, time, os, dns.resolver, sys, urllib, urllib.request
+import shodan
 import requests, io, sys
 import ipaddress
 import whois
@@ -15,7 +17,7 @@ import json
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v1.2 by c0deninja           #
+# IGF - Information Gathering Framework v1.3 by c0deninja           #
 #                                                                   #
 # pip3 install -r requirements.txt                                  #
 #                                                                   # 
@@ -31,13 +33,108 @@ banner = """
 ░██░   ░▒▓███▀▒   ░▒█░    
 ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.2
+ ▒ ░   ░ ░   ░     ░ ░   v1.3
  ░           ░                                        
 
 """
 
+def shodansearch():
+	# shodan script by Sir809
+	ask = input("Do you have a Shodan API key?: ").lower()
+
+	if ask == "yes":
+		pass
+	elif ask == "no":
+		start()
+	elif ask == '':
+		start()
+	else:
+		start()
+
+	apikey = input("Enter API key: ")
+	try:
+		api = Shodan(apikey)
+		url = input("Ip:> ")
+		print("\n")
+		h = api.host(url)
+	except shodan.exception.APIError:
+		print (Fore.RED + "Invalid API key!")
+		start()
+	print(Fore.GREEN + '''
+        IP: {}
+        Country: {}
+        City: {}
+        ISP: {}
+        Org: {}
+        Ports: {}
+        OS: {}
+    
+        '''.format(h['ip_str'],h['country_name'],h['city'],h['isp'],h['org'],h['ports'],h['os']))
+
+
+def shellfinder():
+	site = input("Enter Website: ")
+	wordlist = input("Enter Wordlist: ")
+	print("\n")
+	try:
+		f = open(wordlist, 'r')
+		shells = f.readlines()
+	except IOError:
+		print (Fore.RED + "FIle not found!")
+		webinfo()
+	
+	try:
+		for shelllist in shells:
+			shelllist = shelllist.strip()
+			links = site + "/" + shelllist
+			response = requests.get(links)
+			if response.status_code == 200:
+				print(Fore.GREEN + "Found: {}".format(links))
+			elif response.status_code == 429:
+				print (Fore.RED + "Too many requests")
+				webinfo()
+			elif response.status_code == 400:
+				print (Fore.RED + "Bad Request")
+				webinfo()
+			elif response.status_code == 403:
+				print (Fore.RED + "Forbidden")
+				webinfo()
+			elif response.status_code == 500:
+				print (Fore.RED + "Internal server error")	
+				webinfo()
+	except requests.exceptions.MissingSchema:
+		print (Fore.GREEN + "Please use: http://site.com")
+			
+
+def finduploads():
+	upload = ["upload", "uploads", "upload.php", "up", "uploads.php",
+	"blog/uploads", "blog/upload.php", "blog/uploads.php"]
+	try:
+		site = input("Enter site: ")
+		print ("\n")
+		for fileupload in upload:
+			fileupload = fileupload.strip()
+			uploadlinks = site + "/" + fileupload
+			response = requests.get(uploadlinks)
+			if response.status_code == 200:
+				print (Fore.GREEN + "Found: {}".format(uploadlinks))
+			elif response.status_code == 429:
+				print (Fore.RED + "Too many requests")
+				webinfo()
+			elif response.status_code == 400:
+				print (Fore.RED + "Bad Request")
+				webinfo()
+			elif response.status_code == 403:
+				print (Fore.RED + "Forbidden")
+				webinfo()
+			elif response.status_code == 500:
+				print (Fore.RED + "Internal server error")	
+				webinfo()
+	except requests.exceptions.MissingSchema:
+		print ("Please use: http://wwww.site.com")
+
 def geolocation():
-    # IP Geolocation by Sir809 (gotr00t? member)
+	# IP Geolocation by Sir809
     ip = input("IP:> ")
     print('\n')
     url = ("https://ipinfo.io/{}/json".format(ip))
@@ -142,15 +239,18 @@ def smtpenum():
 	wordlist = input("Wordlist: ")
 	host = input("Host: ")
 	port = input("Port: ")
-	
-	f = open(wordlist, 'rb')
-	smtplist = f.readlines()
+
+	try:
+		f = open(wordlist, 'rb')
+		smtplist = f.readlines()
+	except IOError:
+		print(Fore.RED + "Could not find the file!")
 	
 	print ("********************")
 	print ("Host: " + host)
 	print ("Port: " + port)
 	print ("Wordlist: " + wordlist)
-	print ("Size: " + str(len(wordlist)))
+	print ("Size: " + str(len(smtplist)))
 	print ("********************")
 	print ("\n")
 		
@@ -160,9 +260,11 @@ def smtpenum():
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect((host, int(port)))	
 	except socket.error:
-		print ("Could not connect to host")
+		print (Fore.RED + "Could not connect to host")
 	except TimeoutError:
-		print ("Connection timed out")
+		print (Fore.RED + "Connection timed out")
+	except ValueError:
+		print (Fore.RED + "Value Error")
 		
 	try:
 		for users in smtplist:
@@ -180,16 +282,18 @@ def smtpenum():
 	s.close()
 
 def filedownload():
-	site = input("URL of the file: ")
-	filename = input("Save file as: ")
-
-	headers={'User-Agent': 'Mozilla/5.0'}
-	req = requests.get(site, headers)
-
-	with open(filename, 'wb') as download:
-		download.write(req.content)
-	
-	print ("File {} has been downloaded".format(filename))
+	try:
+		site = input("URL of the file: ")
+		filename = input("Save file as: ")
+		
+		headers={'User-Agent': 'Mozilla/5.0'}
+		req = requests.get(site, headers)
+		
+		with open(filename, 'wb') as download:
+			download.write(req.content)
+			print ("File {} has been downloaded".format(filename))
+	except requests.exceptions.MissingSchema:
+		print ("Please use: http://site.com")
 
 def serviceban():
 	host = input("IP: ")
@@ -437,8 +541,8 @@ def webinfo():
 		print (Fore.WHITE + "[2]  Directory brute" +      "[B] Cloudflare bypass".rjust(35))
 		print (Fore.WHITE + "[3]  Sub domain brute" +     "[C] Wordpress Dir Finder".rjust(37))
 		print (Fore.WHITE + "[4]  Convert domain to IP" + "[D] Reverse DNS lookup".rjust(31))
-		print (Fore.WHITE + "[5]  Get robots.txt")
-		print (Fore.WHITE + "[6]  Whois lookup tool")
+		print (Fore.WHITE + "[5]  Get robots.txt" +       "[E] Find upload path".rjust(35))
+		print (Fore.WHITE + "[6]  Whois lookup tool" +    "[F] Find shells".rjust(27))
 		print (Fore.WHITE + "[7]  HTTP HEAD request")
 		print (Fore.WHITE + "[8]  HTTP OPTIONS")
 		print (Fore.WHITE + "[9]  DNS lookup")
@@ -478,6 +582,10 @@ def webinfo():
 			wordpresscheck()
 		if "D" in prompt:
 			reversednslookup()
+		if "E" in prompt:
+			finduploads()
+		if "F" in prompt:
+			shellfinder()
 		if "back" in prompt:
 			start()
 		if "exit" in prompt:
@@ -497,6 +605,7 @@ def start():
 		print (Fore.WHITE + "[6]  Download a file")
 		print (Fore.WHITE + "[7]  IPv4 to IPv6")
 		print (Fore.WHITE + "[8]  IP Geolocation")
+		print (Fore.WHITE + "[9]  Shodan IP info")
 		print (Fore.RED +   "[X]  Exit")
 
 		print ("\n")
@@ -517,6 +626,8 @@ def start():
 			ipv4tov6()
 		if "8" in prompt:
 			geolocation()
+		if "9" in prompt:
+			shodansearch()
 		if "exit" in prompt:
 			sys.exit(0)
 

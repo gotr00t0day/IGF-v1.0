@@ -3,3 +3,4 @@ ipaddress
 fake-useragent 
 python-whois 
 colorama
+shodan

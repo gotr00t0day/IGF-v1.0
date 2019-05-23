@@ -13,6 +13,13 @@ ReversE DNS lookup<br/>
 Cloudflare bypass<br/>
 Admin Panel Finder<br/>
 Find Wordpress directories<br/>
+Find Shells<br/>
+Find upload location<br/>
+Shodan IP Information<br/>
+IP Geolocation<br/>
+
+
+
 
 
 <b>More to come in the next release.</b>
@@ -39,6 +46,14 @@ pip3 install -r requirements.txt
 ./igf.py
 
 # UPDATES
+
+## IGF V1.3
+
+1. Added: Find Shells
+2. Added: Find upload location
+3. Added: Shodan IP Information
+4. Added: IP Geolocation
+5. Bug Fixes
 
 ## IGF V1.2
 

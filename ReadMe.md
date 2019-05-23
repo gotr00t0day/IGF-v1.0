@@ -49,8 +49,8 @@ pip3 install -r requirements.txt
 
 ## IGF V1.3
 
-1. Added: Find Shells
-2. Added: Find upload location
+1. Added: Find Shells (c99, r57 and etc..)
+2. Added: Find upload locations
 3. Added: Shodan IP Information
 4. Added: IP Geolocation
 5. Bug Fixes

@@ -514,7 +514,7 @@ def portscanner():
 	print ("\n")
 	print ("Scanning IP: " + ip + " please wait..." + "\n")
 	try:
-		for port in range(1, 6000):
+		for port in range(1, 65535):
 			sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			data = sck.connect_ex((ip, port))
 			if data == 0:

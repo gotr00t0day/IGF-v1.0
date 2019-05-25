@@ -511,21 +511,49 @@ def dnslookup():
 
 def portscanner():
 	ip = input("Enter IP to scan: ")
-	print ("\n")
-	print ("Scanning IP: " + ip + " please wait..." + "\n")
+	
 	try:
-		for port in range(1, 6000):
+		start = 1
+		end = 65535
+		start_str = input("Enter the port to start from (leave empty to start from 0): ")
+		end_str = input("Enter the port to end at (leave empty to end at 65535): ")
+		if end_str:
+			print("end",end_str)
+			end = int(end_str)
+		if start_str:
+			print("start",start_str)
+			start = int(start_str)
+
+		if start<0 or start>65535 or end<start or end>65535 or end<0:
+			print("Select a port range between 1 and 65535")
+			return
+		print ("Scanning IP: " + ip + " please wait..." + "\n")
+		counter = 0
+		successful = 0
+		open_ports = []
+		for port in range(start, end):
+			if counter%100==0 and counter>start:
+				print("scanned portrange",str(start)+"-"+str(start+counter-1))
 			sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			data = sck.connect_ex((ip, port))
 			if data == 0:
 				print (Fore.GREEN + "Port: " + str(port) + " " + "open")
+				successful+=1
+				open_ports.append(port)
 			sck.close()
+			counter+=1
+		if successful>1:
+			print(Fore.GREEN+str(successful), "Ports are open \nOpen ports: "+str(open_ports))
+		else:
+			print(Fore.GREEN+ "Port "+str(open_ports)+" is open")
 	except socket.error:
 		print (Fore.RED + "Could not connect to host")
 	except KeyboardInterrupt:
 		print ("You pressed CTRL+C")
 	except ipaddress.AddressValueError:
 		print ("IP address not allowed")
+	except ValueError:
+		print ("Choose a number for the ports")
 
 
 def webinfo():
@@ -582,9 +610,9 @@ def webinfo():
 			finduploads()
 		if "F" in prompt:
 			shellfinder()
-		if "back" in prompt:
+		if "back" in prompt.lower():
 			start()
-		if "exit" in prompt:
+		if "exit" in prompt.lower():
 			exit()
 
 def start():
@@ -624,7 +652,7 @@ def start():
 			geolocation()
 		if "9" in prompt:
 			shodansearch()
-		if "exit" in prompt:
+		if "exit" in prompt.lower() or "x" in prompt.lower():
 			sys.exit(0)
 
 if __name__ == "__main__":

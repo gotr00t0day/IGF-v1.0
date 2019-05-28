@@ -2,6 +2,16 @@
 
 ## IGF Gathers information about a target and its environment.
 
+ ██▓     ▄████      █████▒
+▓██▒    ██▒ ▀█▒   ▓██   ▒ 
+▒██▒   ▒██░▄▄▄░   ▒████ ░ 
+░██░   ░▓█  ██▓   ░▓█▒  ░ 
+░██░   ░▒▓███▀▒   ░▒█░    
+░▓      ░▒   ▒     ▒ ░    
+ ▒ ░     ░   ░     ░      
+ ▒ ░   ░ ░   ░     ░ ░   v1.3
+ ░           ░                      
+
 DNS LOOKUP<br/>
 Subdomains<br/>
 Directories and Filenames<br/>

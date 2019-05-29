@@ -15,8 +15,11 @@ Admin Panel Finder<br/>
 Find Wordpress directories<br/>
 Find Shells<br/>
 Find upload location<br/>
+Find Backup files<br/>
 Shodan IP Information<br/>
 IP Geolocation<br/>
+Spider: Extract links<br/>
+Web Technology Discovery<br/>
 
 
 
@@ -46,6 +49,16 @@ pip3 install -r requirements.txt
 ./igf.py
 
 # UPDATES
+
+## IGF v1.4
+
+A new theme
+
+1. Added: A new theme
+2. Added: Web Technology Discovery
+3. Added: Extract Links
+4. Added: Find backup files
+5. Bug Fixes
 
 ## IGF V1.3
 

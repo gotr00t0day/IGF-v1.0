@@ -57,8 +57,6 @@ pip3 install -r requirements.txt
 
 ## IGF v1.4
 
-A new theme
-
 1. Added: A new theme
 2. Added: Web Technology Discovery
 3. Added: Extract Links

@@ -4,6 +4,8 @@ from colorama import Fore, Back, Style
 from shodan import Shodan
 from urllib.request import urlopen
 from fake_useragent import UserAgent
+from urllib.parse import urljoin
+from builtwith import builtwith
 import socket, time, os, dns.resolver, sys, urllib, urllib.request
 import shodan
 import requests, io, sys
@@ -17,7 +19,7 @@ import json
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v1.3 by c0deninja           #
+# IGF - Information Gathering Framework v1.4 by c0deninja           #
 #                                                                   #
 # pip3 install -r requirements.txt                                  #
 #                                                                   # 
@@ -33,10 +35,128 @@ banner = """
 ░██░   ░▒▓███▀▒   ░▒█░    
 ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.3
+ ▒ ░   ░ ░   ░     ░ ░   v1.4
  ░           ░                                        
 
 """
+
+def findbackup():
+	try:
+		site = input("Enter Site: ")
+		wordlist = input("Enter Wordlist: ")
+		print("\n")
+		ua = UserAgent()
+		header = {'User-Agent':str(ua.chrome)}
+		try:
+			f = open(wordlist, 'r')	
+			backupfiles = f.readlines()
+		except IOError:
+			print (Fore.RED + "File not found")
+			webinfo()
+		
+		for backuplist in backupfiles:
+			backuplist = backuplist.strip()
+			links = site + "/" + backuplist
+			response = requests.get(links, headers=header)
+			if response.status_code == 200:
+				print (Fore.GREEN + "Found: {}".format(links))
+			elif response.status_code == 429:
+				print (Fore.RED + "Too many requests")
+				webinfo()
+			elif response.status_code == 400:
+				print (Fore.RED + "Bad Request")
+				webinfo()
+			elif response.status_code == 403:
+				print (Fore.RED + "Forbidden")
+				webinfo()
+			elif response.status_code == 500:
+				print (Fore.RED + "Internal server error")	
+				webinfo()
+	except requests.exceptions.MissingSchema:
+		print (Fore.RED + "Please use: http://site.com")
+
+
+def techdiscovery():
+	try:
+		site = input("Enter Website: ")
+		print("\n")
+		info = builtwith(site)
+		for framework, tech in info.items():
+			print (Fore.GREEN + framework, ":", tech)
+	except UnicodeDecodeError:
+		pass
+
+def spider():
+	site = input("Enter site: ")
+	print("\n")
+	ua = UserAgent()
+	header = {'User-Agent':str(ua.chrome)}	
+	try:
+		response = requests.get(site, headers=header)
+		if response.status_code == 200:
+			content = response.content
+			links = re.findall('(?:href=")(.*?)"', content.decode('utf-8'))
+			for link in links:
+				link = urljoin(site, link)
+				print (Fore.GREEN + link)
+		elif response.status_code == 429:
+			print (Fore.RED + "Too many requests")
+		elif response.status_code == 400:
+			print (Fore.RED + "Bad Request")
+		elif response.status_code == 403:
+			print (Fore.RED + "Forbidden")
+		elif response.status_code == 500:
+			print (Fore.RED + "Internal server error")	
+	except requests.exceptions.ConnectionError:
+		print (Fore.RED + "Connection Error")
+	except requests.exceptions.MissingSchema:
+		print (Fore.RED + "Please use: http://site.com")	
+
+
+def checksite():
+	try:
+		site = input("Enter Website: ")
+		print ("\n")
+		ua = UserAgent()
+		header = {'User-Agent':str(ua.chrome)}		
+		response = requests.get(site, headers=header)
+		if response.status_code == 200:
+			print (Fore.GREEN + "Site: {} is up!".format(site))
+			webinfo()
+		elif response.status_code == 400:
+			print (Fore.RED + "Bad Request")
+		elif response.status_code == 404:
+			print (Fore.RED + "Not Found")
+		elif response.status_code == 403:
+			print (Fore.RED + "Forbidden")
+		elif response.status_code == 405:
+			print (Fore.RED + "Method not allowed")
+		elif response.status_code == 404:
+			print (Fore.RED + "Not Found")
+		elif response.status_code == 423:
+			print (Fore.RED + "LOCKED")
+		elif response.status_code == 429:
+			print (Fore.RED + "Too many requests")
+		elif response.status_code == 499:
+			print (Fore.RED + "Client closed request")
+		elif response.status_code == 500:
+			print (Fore.RED + "Server error")
+		elif response.status_code == 501:
+			print (Fore.RED + "Not implemented")
+		elif response.status_code == 502:
+			print (Fore.RED + "Bad Gateway")
+		elif response.status_code == 503:
+			print (Fore.RED + "Service Unavailable")
+		elif response.status_code == 511:
+			print (Fore.RED + "Network Authentication Required")
+		elif response.status_code == 599:
+			print (Fore.RED + "Network Connect Timeout Error")
+	except requests.exceptions.MissingSchema:
+		print (Fore.GREEN + "Please use: http://site.com")	
+	except requests.exceptions.ConnectionError:
+		print (Fore.RED + "name or service not known")
+	
+	
 
 def shodansearch():
 	# shodan script by Sir809
@@ -131,14 +251,16 @@ def finduploads():
 
 def geolocation():
 	# IP Geolocation by Sir809
-    ip = input("IP:> ")
-    print('\n')
-    url = ("https://ipinfo.io/{}/json".format(ip))
-    v =  urllib.request.urlopen(url)
-    j = json.loads(v.read())
-
-    for dato in j:
-        print(dato + ": " +j[dato])
+	try:
+		ip = input("IP:> ")
+		print('\n')
+		url = ("https://ipinfo.io/{}/json".format(ip))
+		v =  urllib.request.urlopen(url)
+		j = json.loads(v.read())
+		for dato in j:
+			print(dato + ": " +j[dato])
+	except urllib.error.HTTPError:
+		print (Fore.RED + "NOT FOUND!")
 
 def reversednslookup():
 	ip = input("Enter IP: ")
@@ -527,104 +649,155 @@ def portscanner():
 	except ipaddress.AddressValueError:
 		print ("IP address not allowed")
 
+def miscellaneous():
+	while True:
+		print (Fore.RED + banner)
+		
+		print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " Port Scanner")
+		print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " SMTP Enumeration")
+		print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " Anonymous FTP")
+		print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " Service Banner")
+		print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + " Download File")
+		print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+		print ("\n")
+
+		misccolor = Fore.RED + "(" + Fore.CYAN + "Miscellaneous" + Fore.RED + ")"
+		prompt = input(Fore.WHITE + "IGF~" + misccolor + Fore.WHITE + "# ")
+		if prompt == "1":
+			portscanner()
+		if prompt == "2":
+			smtpenum()
+		if prompt == "3":
+			anonftp()
+		if prompt == "4":
+			serviceban()
+		if prompt == "5":
+			filedownload()
+		if prompt == "back":
+			start()
+
+
+def ipinformation():
+	while True:
+		print (Fore.RED + banner)
+		
+		print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " IPv4 to IPv6")
+		print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " IP Geolocation")
+		print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " Shodan IP info")
+		print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+		print ("\n")
+
+		ipinfocolor = Fore.RED + "(" + Fore.CYAN + "IP Information" + Fore.RED + ")"
+		prompt = input(Fore.WHITE + "IGF~" + ipinfocolor + Fore.WHITE + "# ")
+		if prompt == "1":
+			ipv4tov6()
+		if prompt == "2":
+			geolocation()
+		if prompt == "3":
+			shodansearch()
+		if prompt == "back":
+			start()
+		
 
 def webinfo():
 	while True:
 		print (Fore.RED + banner)
-		print ("\033[0;0m[+] Web Information" + "\n")
 
-		print (Fore.WHITE + "[1]  Banner Grabber" +       "[A] Find Admin Panel".rjust(35))
-		print (Fore.WHITE + "[2]  Directory brute" +      "[B] Cloudflare bypass".rjust(35))
-		print (Fore.WHITE + "[3]  Sub domain brute" +     "[C] Wordpress Dir Finder".rjust(37))
-		print (Fore.WHITE + "[4]  Convert domain to IP" + "[D] Reverse DNS lookup".rjust(31))
-		print (Fore.WHITE + "[5]  Get robots.txt" +       "[E] Find upload path".rjust(35))
-		print (Fore.WHITE + "[6]  Whois lookup tool" +    "[F] Find shells".rjust(27))
-		print (Fore.WHITE + "[7]  HTTP HEAD request")
-		print (Fore.WHITE + "[8]  HTTP OPTIONS")
-		print (Fore.WHITE + "[9]  DNS lookup")
-		print (    "\033[0;0m<--  Back")
+		print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  Banner Grabber")     
+		print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Directory brute")     
+		print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Sub domain brute")    
+		print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Convert domain to IP") 
+		print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + "  Get robots.txt")       
+		print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + "  Whois lookup tool")    
+		print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + "  HTTP HEAD request")    
+		print (Fore.RED + "[" + Fore.CYAN + "8" + Fore.RED + "]" + Fore.WHITE + "  HTTP OPTIONS")        
+		print (Fore.RED + "[" + Fore.CYAN + "9" + Fore.RED + "]" + Fore.WHITE + "  DNS lookup")
+		print (Fore.RED + "[" + Fore.CYAN + "10" + Fore.RED + "]" + Fore.WHITE + " Find Admin Panel")
+		print (Fore.RED + "[" + Fore.CYAN + "11" + Fore.RED + "]" + Fore.WHITE + " Cloudflare Bypass")
+		print (Fore.RED + "[" + Fore.CYAN + "12" + Fore.RED + "]" + Fore.WHITE + " Wordpress Dir Finder")
+		print (Fore.RED + "[" + Fore.CYAN + "13" + Fore.RED + "]" + Fore.WHITE + " Reverse DNS Lookup")
+		print (Fore.RED + "[" + Fore.CYAN + "14" + Fore.RED + "]" + Fore.WHITE + " Find upload path")
+		print (Fore.RED + "[" + Fore.CYAN + "15" + Fore.RED + "]" + Fore.WHITE + " Find Shells")
+		print (Fore.RED + "[" + Fore.CYAN + "16" + Fore.RED + "]" + Fore.WHITE + " Website Status")
+		print (Fore.RED + "[" + Fore.CYAN + "17" + Fore.RED + "]" + Fore.WHITE + " Spider: Extract Links")
+		print (Fore.RED + "[" + Fore.CYAN + "18" + Fore.RED + "]" + Fore.WHITE + " Technology Discovery")
+		print (Fore.RED + "[" + Fore.CYAN + "19" + Fore.RED + "]" + Fore.WHITE + " Find Backup files")
+		print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
 
 
 		print ("\n")
-
-		prompt = input(Fore.WHITE + "IGF~# ")
-		if "1" in prompt:
+		
+		webinfocolor = Fore.RED + "(" + Fore.CYAN + "Web Information" + Fore.RED + ")"
+		prompt = input(Fore.WHITE + "IGF~" + webinfocolor + Fore.WHITE + "# ")
+		if prompt == "1":
 			ask = input("HTTP or HTTPS? ")
-			if "HTTPS" in ask:
+			if ask == "HTTPS":
 				grabthebannerssl()
 			else:
 				grabthebanner()
-		if "2" in prompt:
+		if prompt == "2":
 			dirbrute()
-		if "3" in prompt:
+		if prompt == "3":
 			subrute()
-		if "4" in prompt:
+		if prompt == "4":
 			ipaddressresolv()
-		if "5" in prompt:
+		if prompt == "5":
 			getrobot()
-		if "6" in prompt:
+		if prompt == "6":
 			whoistool()
-		if "7" in prompt:
+		if prompt == "7":
 			gethead()
-		if "8" in prompt:
+		if prompt == "8":
 			getoptions()
-		if "9" in prompt:
+		if prompt == "9":
 			dnslookup()
-		if "A" in prompt:
+		if prompt == "10":
 			adminpanelfind()
-		if "B" in prompt:
+		if prompt == "11":
 			cloudflarebypass()
-		if "C" in prompt:
+		if prompt == "12":
 			wordpresscheck()
-		if "D" in prompt:
+		if prompt == "13":
 			reversednslookup()
-		if "E" in prompt:
+		if prompt == "14":
 			finduploads()
-		if "F" in prompt:
+		if prompt == "15":
 			shellfinder()
-		if "back" in prompt:
+		if prompt == "16":
+			checksite()
+		if prompt == "17":
+			spider()
+		if prompt == "18":
+			techdiscovery()
+		if prompt == "19":
+			findbackup()
+		if prompt == "back":
 			start()
-		if "exit" in prompt:
+		if prompt == "exit":
 			exit()
 
 def start():
 	while True:
 		print (Fore.RED + banner)
-		print (Fore.RED + "\033[0;0mCoded by :  c0deninja".rjust(30, "="))
-		print (Fore.RED + "\033[0;0mDiscord  :  gotr00t?".rjust(29, "=") + "\n\n")
+		print (Fore.RED + "\033[0;0mAuthor  : c0deninja".rjust(30, "="))
+		print (Fore.RED + "\033[0;0mDiscord : gotr00t?".rjust(29, "=")+ "\n\n")
 
-		print (Fore.WHITE + "[1]  Website Information")
-		print (Fore.WHITE + "[2]  Port Scanner")
-		print (Fore.WHITE + "[3]  SMTP Enumeration")
-		print (Fore.WHITE + "[4]  Anon FTP")
-		print (Fore.WHITE + "[5]  Service Banner")
-		print (Fore.WHITE + "[6]  Download a file")
-		print (Fore.WHITE + "[7]  IPv4 to IPv6")
-		print (Fore.WHITE + "[8]  IP Geolocation")
-		print (Fore.WHITE + "[9]  Shodan IP info")
-		print (Fore.RED +   "[X]  Exit")
+		print (Fore.RED + "[ " + Fore.CYAN + "IGF Menu" + Fore.RED + " ]" + "\n")
+
+		print (Fore.RED + "[" + Fore.CYAN + "01" + Fore.RED + "] " + Fore.WHITE + "Website Information")
+		print (Fore.RED + "[" + Fore.CYAN + "02" + Fore.RED + "] " + Fore.WHITE + "IP Information")
+		print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
+		print (Fore.RED + "[" + Fore.CYAN + "X" + Fore.RED + "] " + Fore.WHITE +  " EXIT")
 
 		print ("\n")
-		prompt = input(Fore.WHITE + "IGF~#: ")
-		if "1" in prompt:
+		prompt = input(Fore.WHITE + "IGF~#: ").lower()
+		if prompt == "01":
 			webinfo()
-		if "2" in prompt:
-			portscanner()
-		if "3" in prompt:
-			smtpenum()
-		if "4" in prompt:
-			anonftp()
-		if "5" in prompt:
-			serviceban()
-		if "6" in prompt:
-			filedownload()
-		if "7" in prompt:
-			ipv4tov6()
-		if "8" in prompt:
-			geolocation()
-		if "9" in prompt:
-			shodansearch()
-		if "exit" in prompt:
+		if prompt == "02":
+			ipinformation()
+		if prompt == "03":
+			miscellaneous()
+		if "exit" or "x" in prompt.lower():
 			sys.exit(0)
 
 if __name__ == "__main__":

@@ -29,7 +29,7 @@ Web Technology Discovery<br/>
 
 # V1.4 Has a new Theme!
 
-![alt text](https://github.com/gotr00t0day/IGF/blob/master/9B120D6B-867E-47D2-A3CC-E8B706699EED.jpeg)
+![alt text](https://github.com/gotr00t0day/IGF/blob/master/25E00624-1663-497D-BE09-1FA6DA406BC0.jpeg)
 
 ___________________________________________________________________________________________________________
 

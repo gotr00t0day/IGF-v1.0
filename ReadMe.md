@@ -33,8 +33,6 @@ Web Technology Discovery<br/>
 
 ___________________________________________________________________________________________________________
 
-![alt text](https://github.com/gotr00t0day/IGF-v1.0/blob/master/IGF.png)
-
 
 # INSTALLATION
 

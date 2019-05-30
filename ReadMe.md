@@ -79,13 +79,9 @@ pip3 install -r requirements.txt
 4. Added: Reverse DNS lookup
 5. Bug Fixes
 
-![alt text](https://github.com/gotr00t0day/IGF/blob/master/igf4.jpg)
-
 ## IGF V1.1
 
 1. Added SSL/TLS support to some scripts
 2. Added a file downloader 
 3. Added a SMTP Enumeration script
 4. Fixed a few bugs.
-
-![alt text](https://github.com/gotr00t0day/IGF/blob/master/igf3.jpg)

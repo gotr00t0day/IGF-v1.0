@@ -340,7 +340,7 @@ def adminpanelfind():
 			response = requests.get(link, headers=header)
 			if response.status_code == 200:
 				print ("Found {}".format(link))
-			elif response.status_code == 400:
+			elif response.status_code == 404:
 				print("{} Not Found".format(link))
 			elif response.status_code == 429:
 				print ("Too many requests")

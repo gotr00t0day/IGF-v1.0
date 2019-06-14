@@ -1,4 +1,4 @@
-import infogath2
+import igf
 
 infogathscript = igf.Infogath()
 infogathscript.start()

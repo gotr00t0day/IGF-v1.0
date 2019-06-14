@@ -42,7 +42,7 @@ git clone https://github.com/gotr00t0day/IGF.git
 
 cd IGF
 
-chmod +x igf.py
+chmod +x igf.py<br/>
 chmod +x main.py
 
 pip3 install -r requirements.txt

@@ -20,7 +20,9 @@ Shodan IP Information<br/>
 IP Geolocation<br/>
 Spider: Extract links<br/>
 Web Technology Discovery<br/>
-
+Google Dork Search<br/>
+Phone Number Validation<br/>
+Retrieve Session Cookies<br/>
 
 
 

@@ -58,11 +58,10 @@ pip3 install -r requirements.txt
 
 ## IGF v1.5
 
-1. Added: converted IGF to OOP (object oriented programming)
-2. Added: Google Dork Search
-3. Added: Phone Number Validation
-4. Added: Retrieve Session Cookies
-5. Added: Bug Fixes
+1. Added: Google Dork Search
+2. Added: Phone Number Validation
+3. Added: Retrieve Session Cookies
+4. Added: Bug Fixes
 
 ## IGF v1.4
 

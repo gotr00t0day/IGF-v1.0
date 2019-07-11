@@ -712,22 +712,6 @@ class Infogath:
 			print ("You pressed CTRL+C")
 		except ipaddress.AddressValueError:
 			print ("IP address not allowed")
-	
-	def vulnerabilityscan(self):
-		while True:
-			print (Fore.RED + banner)
-
-			print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " LFI Scan")
-			print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
-			print ("\n")
-
-			vulnscancolor = Fore.RED + "(" + Fore.CYAN + "Vulnerability Scanners" + Fore.RED + ")"
-			prompt = input(Fore.WHITE + "IGF~" + vulnscancolor + Fore.WHITE + "# ")
-
-			if prompt == "1":
-				self.vulnerabilityscan()
-			if prompt == "back":
-				self.start()
 
 
 	def miscellaneous(self):
@@ -876,8 +860,7 @@ class Infogath:
 
 			print (Fore.RED + "[" + Fore.CYAN + "01" + Fore.RED + "] " + Fore.WHITE + "Website Information")
 			print (Fore.RED + "[" + Fore.CYAN + "02" + Fore.RED + "] " + Fore.WHITE + "IP Information")
-			print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Vulnerability Scanners")
-			print (Fore.RED + "[" + Fore.CYAN + "04" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
+			print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
 			print (Fore.RED + "[" + Fore.CYAN + "X" + Fore.RED + "] " + Fore.WHITE +  " EXIT")
 
 			print ("\n")
@@ -887,8 +870,6 @@ class Infogath:
 			if prompt == "02":
 				self.ipinformation()
 			if prompt == "03":
-				self.vulnerabilityscan()
-			if prompt == "04":
 				self.miscellaneous()
 			if "exit" or "x" in prompt.lower():
 				sys.exit(0)

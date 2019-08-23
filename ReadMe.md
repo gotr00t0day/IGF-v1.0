@@ -29,6 +29,10 @@ Retrieve Session Cookies<br/>
 
 <b>More to come in the next release.</b>
 
+# V1.6
+![alt text](https://github.com/gotr00t0day/IGF/blob/master/20190823_131503.png)
+
+
 # V1.4 Has a new Theme!
 
 ![alt text](https://github.com/gotr00t0day/IGF/blob/master/25E00624-1663-497D-BE09-1FA6DA406BC0.jpeg)

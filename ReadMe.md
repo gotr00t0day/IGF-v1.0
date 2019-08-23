@@ -60,6 +60,14 @@ pip3 install -r requirements.txt
 
 # UPDATES
 
+## IGF V1.6
+
+1. Added: A New Enumeration Section
+2. Added: SMB Enumeration 
+3. Added: FTP User Enumeration
+4. Added: DNS Enumeration
+5. Bug Fixes
+
 ## IGF v1.5
 
 1. Added: Google Dork Search

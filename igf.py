@@ -13,7 +13,7 @@ from pygeocoder import Geocoder
 from os import path
 import time
 import os.path
-import socket, time, os, dns.resolver, sys, urllib, urllib.request
+import socket, time, os, dns.resolver, sys, urllib, urllib.request, subprocess
 import shodan
 import requests, io, sys
 import ipaddress
@@ -26,7 +26,7 @@ import json
 
 #####################################################################
 #                                                                   #
-# IGF - Information Gathering Framework v1.4 by c0deninja           #
+# IGF - Information Gathering Framework v1.6 by c0deninja           #
 #                                                                   #
 # pip3 install -r requirements.txt                                  #
 #                                                                   # 
@@ -42,11 +42,53 @@ banner = """
 ░██░   ░▒▓███▀▒   ░▒█░    
 ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.5
+ ▒ ░   ░ ░   ░     ░ ░   v1.6
  ░           ░                                        
 
 """
 class Infogath:
+
+	def commands(self, cmd):
+		try:
+			subprocess.check_call(cmd, shell=True)
+		except:
+			pass
+	
+	def ftpuserenum(self):
+		if path.exists("ftp_user_enum.pl"):
+			pass
+		if not path.exists("ftp_user_enum.pl"):
+			print (Fore.RED + "file ftp_user_enum.pl not found, exiting!")
+			self.enumeration()
+		ip = input("Enter FTP server: ")
+		user = input("User to enumerate: ")
+		print(Fore.GREEN + "\n")
+		print("==================== FTP User Enumeration ===================" + "\n")
+		self.commands("perl ftp_user_enum.pl -u {} -t {}".format(user, ip))
+
+	def dnsenum(self):
+		domain = input("Enter the domain name to enumerate: ")
+		if domain == "":
+			print (Fore.RED + "Please dont leave this blank!")
+			self.enumeration()
+		print ("\n")
+		print(Fore.GREEN)
+		print("================= DNS Enumeration ==================" + "\n")
+		self.commands("host -t ns " + domain + "\n")
+		self.commands("host -t mx " + domain + "\n")
+		self.commands("nslookup " + domain + "\n")
+		self.commands("dig " + domain + "\n")
+		self.commands("dig +nocmd " + domain + " ANY +noall +answer" + "\n")
+
+	
+	def smbenum(self):
+		ip = input("Enter IP Address: ")
+		print ("\n")
+		print ("============ SMB Enumeration with enum4linux=============" + "\n")
+		self.commands("enum4linux " + ip + "\n")
+		print ("============ SMB Vulnerability Scan ===========")
+		self.commands("nmap -vv -sV -Pn -p139,445 --script smb-vuln-conficker.nse,smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse " + ip + "\n")
+
 
 	def phonenuminfo(self):
 		phonenumber = input("Enter Phone number: ")
@@ -363,7 +405,7 @@ class Infogath:
 				self.webinfo()
 
 	def cloudflarebypass(self):
-		domains = ['mail', 'ftp', 'mail', 'cpanel']
+		domains = ['mail', 'ftp', 'cpanel']
 		try:
 			site = input("Enter Website: ")
 			print ("\n")
@@ -712,6 +754,34 @@ class Infogath:
 			print ("You pressed CTRL+C")
 		except ipaddress.AddressValueError:
 			print ("IP address not allowed")
+	
+	def enumeration(self):
+		while True:
+			print (Fore.RED + banner)
+
+			print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " SMTP Enumeration")
+			print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " SMB Enumeration")
+			print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " DNS Enumeration")
+			print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " FTP Anonymous Check")
+			print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + " FTP User Enumeration")
+			print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+			print ("\n")
+
+			enumcolor = Fore.RED + "(" + Fore.CYAN + "Enumeration tools" + Fore.RED + ")"
+			prompt = input(Fore.WHITE + "IGF~" + enumcolor + Fore.WHITE + "# ")
+
+			if prompt == "1":
+				self.smtpenum()
+			if prompt == "2":
+				self.smbenum()
+			if prompt == "3":
+				self.dnsenum()
+			if prompt == "4":
+				self.anonftp()
+			if prompt == "5":
+				self.ftpuserenum()
+			if prompt == "back":
+				self.start()
 
 
 	def miscellaneous(self):
@@ -719,12 +789,10 @@ class Infogath:
 			print (Fore.RED + banner)
 			
 			print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " Port Scanner")
-			print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " SMTP Enumeration")
-			print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " Anonymous FTP")
-			print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " Service Banner")
-			print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + " Download File")
-			print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + " Google Dork Search")
-			print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + " Phone Number Validation")
+			print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " Service Banner")
+			print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " Download File")
+			print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " Google Dork Search")
+			print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + " Phone Number Validation")
 			print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
 			print ("\n")
 
@@ -733,16 +801,12 @@ class Infogath:
 			if prompt == "1":
 				self.portscanner()
 			if prompt == "2":
-				self.smtpenum()
-			if prompt == "3":
-				self.anonftp()
-			if prompt == "4":
 				self.serviceban()
-			if prompt == "5":
+			if prompt == "3":
 				self.filedownload()
-			if prompt == "6":
+			if prompt == "4":
 				self.googledork()
-			if prompt == "7":
+			if prompt == "5":
 				self.phonenuminfo()
 			if prompt == "back":
 				self.start()
@@ -860,7 +924,8 @@ class Infogath:
 
 			print (Fore.RED + "[" + Fore.CYAN + "01" + Fore.RED + "] " + Fore.WHITE + "Website Information")
 			print (Fore.RED + "[" + Fore.CYAN + "02" + Fore.RED + "] " + Fore.WHITE + "IP Information")
-			print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
+			print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Enumeration")
+			print (Fore.RED + "[" + Fore.CYAN + "04" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
 			print (Fore.RED + "[" + Fore.CYAN + "X" + Fore.RED + "] " + Fore.WHITE +  " EXIT")
 
 			print ("\n")
@@ -870,6 +935,8 @@ class Infogath:
 			if prompt == "02":
 				self.ipinformation()
 			if prompt == "03":
+				self.enumeration()
+			if prompt == "04":
 				self.miscellaneous()
 			if "exit" or "x" in prompt.lower():
 				sys.exit(0)

@@ -55,6 +55,27 @@ pip3 install -r requirements.txt
 
 # UPDATES
 
+## IGF V1.7
+
+1. Added: Windows Exploitation
+   - Exploit Suggester
+   - Evil-WinRM
+2. Added: Subdomain Playground
+   - Subrute
+   - CertSpotter
+   - CertSh
+   - Amass
+   - Sublist3r
+   - Knockpy
+   - Subfinder
+3. Added: Vulnerability Scan
+   - ShellShock
+   - HeartBleed
+   - Drupageddon
+   - Drupageddon2
+   - Apache Struts RCE
+   - XSStrike
+
 ## IGF V1.6
 
 1. Added: A New Enumeration Section

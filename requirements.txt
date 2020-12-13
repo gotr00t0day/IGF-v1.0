@@ -6,5 +6,7 @@ colorama
 shodan
 builtwith
 phonenumbers
-google
+googlesearch-python
 pygeocoder
+jq
+amass

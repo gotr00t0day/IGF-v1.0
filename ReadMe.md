@@ -3,9 +3,9 @@
 ## IGF Gathers information about a target and its environment.
 
 DNS LOOKUP<br/>
-Subdomains<br/>
-Directories and Filenames<br/>
-Ports and Services<br/>
+Subdomai Bruteforcing<br/>
+Bruteforce Directories and Filenames<br/>
+Scan for Ports and Services<br/>
 HTTP requests<br/>
 Whois information<br/>
 Domain to IP converter<br/>
@@ -23,6 +23,7 @@ Web Technology Discovery<br/>
 Google Dork Search<br/>
 Retrieve Session Cookies<br/>
 DNS, SMB, SMTP & FTP user Enumeration<br/>
+Vulnerability Scanning<br/>
 
 
 

@@ -24,6 +24,7 @@
 - Retrieve Session Cookies<br/>
 - DNS, SMB, SMTP & FTP user Enumeration<br/>
 - Vulnerability Scanning<br/>
+- Windows Exploitation<br/>
 
 
 

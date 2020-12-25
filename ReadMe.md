@@ -3,27 +3,27 @@
 ## IGF Gathers information about a target and its environment.
 
 - DNS LOOKUP<br/>
-Subdomai Bruteforcing<br/>
-Bruteforce Directories and Filenames<br/>
-Scan for Ports and Services<br/>
-HTTP requests<br/>
-Whois information<br/>
-Domain to IP converter<br/>
-ReversE DNS lookup<br/>
-Cloudflare bypass<br/>
-Admin Panel Finder<br/>
-Find Wordpress directories<br/>
-Find Shells<br/>
-Find upload location<br/>
-Find Backup files<br/>
-Shodan IP Information<br/>
-IP Geolocation<br/>
-Spider: Extract links<br/>
-Web Technology Discovery<br/>
-Google Dork Search<br/>
-Retrieve Session Cookies<br/>
-DNS, SMB, SMTP & FTP user Enumeration<br/>
-Vulnerability Scanning<br/>
+- Subdomai Bruteforcing<br/>
+- Bruteforce Directories and Filenames<br/>
+- Scan for Ports and Services<br/>
+- HTTP requests<br/>
+- Whois information<br/>
+- Domain to IP converter<br/>
+- ReversE DNS lookup<br/>
+- Cloudflare bypass<br/>
+- Admin Panel Finder<br/>
+- Find Wordpress directories<br/>
+- Find Shells<br/>
+- Find upload location<br/>
+- Find Backup files<br/>
+- Shodan IP Information<br/>
+- IP Geolocation<br/>
+- Spider: Extract links<br/>
+- Web Technology Discovery<br/>
+- Google Dork Search<br/>
+- Retrieve Session Cookies<br/>
+- DNS, SMB, SMTP & FTP user Enumeration<br/>
+- Vulnerability Scanning<br/>
 
 
 

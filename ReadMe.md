@@ -2,7 +2,7 @@
 
 ## IGF Gathers information about a target and its environment.
 
-DNS LOOKUP<br/>
+- DNS LOOKUP<br/>
 Subdomai Bruteforcing<br/>
 Bruteforce Directories and Filenames<br/>
 Scan for Ports and Services<br/>

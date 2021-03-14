@@ -25,6 +25,7 @@ import ftplib
 import ssl
 import re
 import json
+import uuid
  
 #####################################################################
 #                                                                   #
@@ -44,7 +45,7 @@ banner = """
  ░██░   ░▒▓███▀▒   ░▒█░    
  ░▓      ░▒   ▒     ▒ ░    
  ▒ ░     ░   ░     ░      
- ▒ ░   ░ ░   ░     ░ ░   v1.7
+ ▒ ░   ░ ░   ░     ░ ░   v1.8
  ░           ░                                        
 
 """
@@ -55,12 +56,168 @@ class Infogath:
             subprocess.check_call(cmd, shell=True)
         except:
             pass
-        
+    
+    def config(self):
+        config = {}
+        domain = input("Domain: ")
+        config['domain'] = []
+        config['domain'].append({'site': domain})
+        with open("config.txt", "w") as f:
+            json.dump(config, f)  
+        self.start()
+
+    def siteconfig(self):
+        with open('config.txt') as json_file:
+            data = json.load(json_file)
+            for conf in data['domain']:
+                return conf['site']
+
+    def displayconfig(self):
+          with open('config.txt') as json_file:
+            data = json.load(json_file)
+            for conf in data['domain']:
+                print(Fore.RED + "[" + Fore.CYAN + conf['site'] + Fore.RED + "]")
+
+                
+    def torghost(self):
+        if which("torghost"):
+            while True:
+                print("\n")
+                print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  Start")  
+                print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Stop") 
+                print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Switch") 
+                print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Exit")
+                print("\n")
+                
+                prompt = input(Fore.CYAN + "TorGhost~" + Fore.RED + "# ")
+                if prompt == "1":
+                    self.commands("sudo torghost --start")
+                if prompt == "2":
+                    self.commands("sudo torghost --stop")
+                if prompt == "3":
+                    self.commands("sudo torghost --switch")
+                if prompt == "4":
+                    self.start()
+        else:
+            install = input("TorGhost is not installed, do you want to install it??? (y/n): ").lower()
+            if install == "y":
+                self.commands("git clone https://github.com/SusmithKrishnan/torghost.git | cd torghost | chmod +x build.sh | ./build.sh")
+                if which("torghost"):
+                    print("torghost installed successfully!")
+                else:
+                    print(Fore.RED + "torghost couldn't be installed")
+
+
+    def myip(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local = socket.gethostname()
+        print("\n")
+        print(Fore.GREEN + f"Public: {s.getsockname()[0]}")
+        print(Fore.GREEN + f"Local: {socket.gethostbyname(local)}")
+        print ("MAC: " + ':'.join(re.findall('..', '%012x' % uuid.getnode()))) 
+
+
+    def dirb(self):
+        if which("dirb"):
+            command = input("Dirb: ")
+            self.commands(f"dirb {command}")
+        else:
+            install = input("Dirb is not installed, Do you want to install it??? (y/n): ").lower()
+            if install == 'y':
+                self.commands("sudo apt install dirb")
+                if which("dirb"):
+                    print(Fore.GREEN + "dirb installed successfully!!")
+                else:
+                    print(Fore.CYAN + "dirb wasn't installed")
+                    self.DirectoryPlayground()
+            if install == "n":
+                self.DirectoryPlayground()
+
+    def fuff(self):
+        if which("ffuf"):
+            cli = input("Fuff: ")
+            self.commands(f"ffuf {cli}")
+        else:
+            ask = input("ffuf is not installed, do you want to install it (y/n): ").lower()
+            if ask == "y":
+                self.commands("sudo apt install ffuf")
+                if which("ffuf"):
+                    print(Fore.GREEN + "ffuf installed successfully!")
+                    self.DirectoryPlayground()
+                else:
+                    print("ffuf is not installed")
+                    self.DirectoryPlayground()
+            if ask == "n":
+                self.DirectoryPlayground()    
+
+    def dirsearch(self):
+        path = os.path.abspath(os.getcwd())
+        cli = input("DirSearch: ")
+        self.commands(f"python3 {path}/directoryplayground/dirsearch/dirsearch.py {cli}")
+    
+    def smbclient(self):
+        if which("smbclient"):
+            cli = self.siteconfig()
+            self.commands(f"smbclient {cli}")
+        else:
+            print(Fore.CYAN + "smbclient not found")
+            self.SmbPlayground()
+
+    
+    def subover(self):
+        if which("SubOver"):
+            domain = self.siteconfig()
+            self.commands(f"SubOver -l {domain}")
+        else:
+            ask = input("SubOver is not installed, do you want to install it?? y/n: ")
+            if ask == "y":
+                home = os.environ['HOME']  
+                self.commands("go get github.com/Ice3man543/SubOver | cd {}/go/bin | sudo mv {}/go/bin/SubOver /usr/local/bin".format(home, home))
+            if ask == "n":
+                self.SubdomainPlayground()
+
+
+    def rapiddns(self):
+        rapiddnspath = os.path.abspath(os.getcwd())
+        domain = self.siteconfig()
+        if path.exists(f"{rapiddnspath}/subdomainplayground/rapiddns.sh"):
+            self.commands(f"bash {rapiddnspath}/subdomainplayground/rapiddns.sh {domain}")
+        if not path.exists(f"{rapiddnspath}/subdomainplayground/rapiddns.sh"):
+            print(Fore.RED + "rapiddns.sh not found!")
+
+
+    def httprobe(self):
+        if which("httprobe"):
+            domains = input("domains to check: ")
+            self.commands(f"cat {domains} | httprobe | anew")
+        else:
+            ask = input("httrobe is not installed, do you want to install it?? y/n: ")
+            if ask == "y":
+                home = os.environ['HOME']  
+                self.commands("go get -u github.com/tomnomnom/httprobe | cd {}/go/bin | sudo mv {}/go/bin/httprobe /usr/local/bin".format(home, home))
+            if ask == "n":
+                self.webinfo()
+
+    
+    def nikto(self):
+        if which("nikto"):
+            self.commands(f"nikto -h {self.siteconfig()}")
+        else:
+            install = input("Do you want to install nikto??? y/n: ").lower()
+            if install == "y":
+                self.commands("sudo apt install nikto")
+                if which("nikto"):
+                    print(Fore.GREEN +  "Nikto installed successfully!!")
+                else:
+                    print(Fore.RED + "Nikto didn't installed!")
+            if install == "n":
+                self.vulnerability()
     
     def cmseek(self):
         if path.exists("CMSeeK"):
             print("Found CMSeeK!")
-            site = input("Enter Site: ")
+            site = self.siteconfig()
             cmseekpath = os.path.abspath(os.getcwd())
             self.commands("python3 {}/CMSeeK/cmseek.py -u {} --random-agent".format(cmseekpath, site))
         if not path.exists("CMSeeK"):
@@ -80,22 +237,22 @@ class Infogath:
     
     def nmapvuln(self):
         print("======== Vulnerability scan with Nmap ========\n")
-        site = input("Enter Site: ")
+        site = self.siteconfig()
         self.commands("nmap --script vuln {}".format(site))
     
     def shellshock(self):
         print("======= Scanning for shellshock vulnerability =======\n")
-        site = input("Enter Site: ")
+        site = self.siteconfig()
         self.commands("nmap -sV -p- --script http-shellshock {}".format(site))
     
     def heartbleedvuln(self):
         print("======= Scanning for the HeartBleed vulnerability =======\n")
-        site = input("Enter Site: ")
+        site = self.siteconfig()
         self.commands("nmap -p 443 --script ssl-heartbleed {}".format(site))
     
     def drupageddon(self):
         print("====== Scanning for the Drupageddon vulnerability ======\n")
-        site = input("Enter Site: ")
+        site = self.siteconfig()
         self.commands("nmap --script http-vuln-cve2014-3704 --script-args http-vuln-cve2014-3704.cmd='uname -a',http-vuln-cve2014-3704.uri='/drupal' {}".format(site))
     
     def drupageddon2(self):
@@ -114,14 +271,14 @@ class Infogath:
         if path.exists("vulnerability/apachestruts.py"):
             print("Found the exploit!!")
             apachestruts = os.path.abspath(os.getcwd())
-            site = input("Enter Site: ")
+            site = self.siteconfig()
             self.commands("python3 {}/vulnerability/apachestruts.py -u {}".format(apachestruts, site))
         if not path.exists("vulnerability/apachestruts.py"):
             print("You're missing the exploit..")
             self.vulnerability()
     
     def xsstrike(self):
-        site = input("Enter Site: ")
+        site = self.siteconfig()
         if path.exists("XSStrike"):
             print("Found XSStrike!")
         if not path.exists("XSStrike"):
@@ -139,7 +296,7 @@ class Infogath:
     def knockpy(self):
         print("checking to see if knockpy is installed..\n")
         if which("knockpy"):
-            site = input("Enter site: ")
+            site = self.siteconfig()
             self.commands("knockpy {}".format(site))
         else:
             install = input("knockpy isnt installed, you want to install it now?? y/n: ")
@@ -152,7 +309,7 @@ class Infogath:
     def subfinder(self):
         print("Checking to see if subfinder is installed..\n")
         if which("subfinder"):
-            site = input("Enter Site: ")
+            site = self.siteconfig()
             self.commands("subfinder -d {}".format(site))       
         else:    
             install = input("subfinder isn't installed, you want to install it now?? y/n: ")
@@ -170,7 +327,7 @@ class Infogath:
         print("Checking to see if sublist3r is installed")
         if which("sublist3r"):
             print (Fore.GREEN + "Sublist3r is already installed!!\n")
-            site = input(Fore.WHITE + "Site: ")
+            site = self.siteconfig()
             cmd = "sublist3r -d {}".format(site)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out, err = p.communicate()
@@ -205,7 +362,7 @@ class Infogath:
         print(Fore.CYAN + "Checking to see if amass is installed...\n")
         if which("amass"):
             print(Fore.GREEN + "amass is already installed!\n")
-            domain = input("Enter site: ")
+            domain = self.siteconfig()
             cmd = "amass enum -passive -d {}".format(domain)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out, err = p.communicate()
@@ -230,7 +387,7 @@ class Infogath:
 
     def spotter(self):
         print (Fore.CYAN + "bash code by nahamsec \n")
-        site = input(Fore.WHITE + "Enter site: ")
+        site = self.siteconfig()
         print(Fore.GREEN)
         cmd = "./subdomainplayground/spotter.sh {}".format(site)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -253,7 +410,7 @@ class Infogath:
 
     def certsh(self):
         print (Fore.CYAN + "bash code by nahamsec \n")
-        site = input(Fore.WHITE + "Enter site: ")
+        site = self.siteconfig()
         print(Fore.GREEN)
         cmd = "./subdomainplayground/certsh.sh {}".format(site)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -275,33 +432,33 @@ class Infogath:
 
 
     def smbvulnscan(self):
-        ip = input("IP: ")
+        ip = self.siteconfig()
         port = input("SMB Port: ")
         self.commands(f"nmap -p{port} --script smb-vuln-* {ip} -Pn")
     
     def lookupsids(self):
-        if path.exists('lookupsid.py'):
+        pathfile = os.path.abspath(os.getcwd())
+        if path.exists(f"{pathfile}/smbplayground/lookupsid.py"):
             print (Fore.GREEN + "Found lookupsid.py!\n")
-            pass
+            print("\n")
+            print(Fore.WHITE)
+            user = input("Enter User: ")
+            password = input("Enter Password: ")
+            ip = self.siteconfig()
+            print("\n")
+            self.commands(Fore.LIGHTGREEN_EX + "sudo python lookupsid.py {}:{}@{}".format(user, password, ip))
 
-        if not path.exists('lookupsid.py'):
+        if not path.exists(f"{pathfile}/smbplayground/lookupsid.py"):
             directory = os.path.abspath(os.getcwd())
             print (Fore.RED + "Could not find lookupsid.py in {}".format(directory))
             self.start()
-        
-        print(Fore.WHITE)
-        user = input("Enter User: ")
-        password = input("Enter Password: ")
-        ip = input("Enter IP: ")
-        print("\n")
-        self.commands(Fore.LIGHTGREEN_EX + "sudo python lookupsid.py {}:{}@{}".format(user, password, ip))
 
     
     def enumforlinux(self):
         print ("Checking to see if enum4linux is installed...\n")
         if which("enum4linux"):
             print (Fore.GREEN + "enum4linux is already installed!\n")
-            ip = input(Fore.WHITE + "Enter ip: ")
+            ip = self.siteconfig()
             self.commands("enum4linux {}".format(ip))
         else:
             print ("enum4linux is not installed")
@@ -329,7 +486,7 @@ class Infogath:
                 self.start()
         print ("\n")
         print("============== Evil-WinRM ================\n")
-        ip = input("Enter ip: ")
+        ip = self.siteconfig()
         user = input("Enter user: ")
         password = input("Enter password: ")
         rubyfile = os.path.abspath(os.getcwd())
@@ -374,14 +531,14 @@ class Infogath:
         if not path.exists("ftp_user_enum.pl"):
             print (Fore.RED + "file ftp_user_enum.pl not found, exiting!")
             self.enumeration()
-        ip = input("Enter FTP server: ")
+        ip = self.siteconfig()
         user = input("User to enumerate: ")
         print(Fore.GREEN + "\n")
         print("==================== FTP User Enumeration ===================" + "\n")
         self.commands("perl ftp_user_enum.pl -u {} -t {}".format(user, ip))
  
     def dnsenum(self):
-        domain = input("Enter the domain name to enumerate: ")
+        domain = self.siteconfig()
         if domain == "":
             print (Fore.RED + "Please dont leave this blank!")
             self.enumeration()
@@ -453,7 +610,7 @@ class Infogath:
  
     def findbackup(self):
         try:
-            site = input("Enter Site: ")
+            site = self.siteconfig()
             wordlist = input("Enter Wordlist: ")
             print("\n")
             ua = UserAgent()
@@ -489,7 +646,7 @@ class Infogath:
  
     def techdiscovery(self):
         try:
-            site = input("Enter Website: ")
+            site = self.siteconfig()
             print("\n")
             print ("Scanning..." + "\n")
             info = builtwith(site)
@@ -499,7 +656,7 @@ class Infogath:
             pass
  
     def spider(self):
-        site = input("Enter site: ")
+        site = self.siteconfig()
         print("\n")
         ua = UserAgent()
         header = {'User-Agent':str(ua.chrome)} 
@@ -527,7 +684,7 @@ class Infogath:
  
     def checksite(self):
         try:
-            site = input("Enter Website: ")
+            site = self.siteconfig()
             print ("\n")
             ua = UserAgent()
             header = {'User-Agent':str(ua.chrome)}     
@@ -603,7 +760,7 @@ class Infogath:
  
  
     def shellfinder(self):
-        site = input("Enter Website: ")
+        site = self.siteconfig()
         wordlist = input("Enter Wordlist: ")
         print("\n")
         try:
@@ -640,7 +797,7 @@ class Infogath:
         upload = ["upload", "uploads", "upload.php", "up", "uploads.php",
         "blog/uploads", "blog/upload.php", "blog/uploads.php"]
         try:
-            site = input("Enter site: ")
+            site = self.siteconfig()
             print ("\n")
             for fileupload in upload:
                 fileupload = fileupload.strip()
@@ -662,22 +819,10 @@ class Infogath:
                     self.webinfo()
         except requests.exceptions.MissingSchema:
             print ("Please use: http://wwww.site.com")
- 
-    def geolocation(self):
-        # IP Geolocation by Sir809
-        try:
-            ip = input("IP:> ")
-            print('\n')
-            url = ("https://ipinfo.io/{}/json".format(ip))
-            v =  urllib.request.urlopen(url)
-            j = json.loads(v.read())
-            for dato in j:
-                print(dato + ": " +j[dato])
-        except urllib.error.HTTPError:
-            print (Fore.RED + "NOT FOUND!")
+
  
     def reversednslookup(self):
-        ip = input("Enter IP: ")
+        ip = self.siteconfig()
         print("\n")
         try:
             reversedns = socket.gethostbyaddr(str(ip))
@@ -690,7 +835,7 @@ class Infogath:
         'wp-config.php', 'wp-mail.php', 'wp-load.php', 'wp-settings.php', 'wp-includes', 'wp-activate.php',
         'wp-cron.php', 'wp-signup.php', 'wp-config-sample.php']
  
-        site = input("Enter website: ")
+        site = self.siteconfig()
         print ("\n")
        
         for wpress in wp:
@@ -715,7 +860,7 @@ class Infogath:
     def cloudflarebypass(self):
         domains = ['mail', 'ftp', 'cpanel']
         try:
-            site = input("Enter Website: ")
+            site = self.siteconfig()
             print ("\n")
             try:
                 ip = socket.gethostbyname(str(site))
@@ -744,7 +889,7 @@ class Infogath:
     'admin/account.php', 'admin_area/admin.php', 'admin_area/login.php', 'siteadmin/login.php', 'siteadmin/index.php', 'siteadmin/login.html',
     'admin/account.html', 'admin/index.html', 'admin/login.html', 'admin/admin.html']
         try:
-            site = input("Enter Website: ")
+            site = self.siteconfig()
             print ("\n")
             ua = UserAgent()
             header = {'User-Agent':str(ua.chrome)}
@@ -853,7 +998,7 @@ class Infogath:
  
  
     def subrute(self):
-        host = input("Enter Website: ")
+        host = self.siteconfig()
         wordlist = input("Enter Sub Domain list: ")
         ua = UserAgent()
         header = {'User-Agent':str(ua.chrome)}
@@ -877,7 +1022,7 @@ class Infogath:
  
     def getoptions(self):
         try:
-            host = input("Enter website: ")
+            host = self.siteconfig()
             print ("\n")
             conn = http.client.HTTPConnection(host)
             conn.connect()
@@ -897,7 +1042,7 @@ class Infogath:
  
     def gethead(self):
         try:
-            host = input("Enter Website: ")
+            host = self.siteconfig()
             print ("\n")
             resp = requests.head(host)
             print (resp.headers)
@@ -909,16 +1054,17 @@ class Infogath:
  
     def whoistool(self):
         try:
-            host = input("Enter website: ")
-            w = whois.whois(host)
-            print (w)
+            host = self.siteconfig()
+            w = whois.query(host)
+            for key, value in w.__dict__.items():
+                print (Fore.GREEN + key, ":", value)
             time.sleep(2)
         except socket.gaierror:
             print (Fore.RED + "Name or service not known")
  
     def getrobot(self):
         try:
-            site = input("Enter Website: ")
+            site = self.siteconfig()
             print ("\n")
             getreq = urlopen(site + "/" + "robots.txt", data=None)
             data = io.TextIOWrapper(getreq, encoding='utf-8')
@@ -935,7 +1081,7 @@ class Infogath:
     def ipaddressresolv(self):
         try:
             print ("EX: site.com")
-            host = input("Website: ") #Ex: use site.com format
+            host = self.siteconfig() #Ex: use site.com format
             print ("\n")
             print (Fore.GREEN + "IPv4 Address: " + socket.gethostbyname(host))
         except socket.gaierror:
@@ -954,7 +1100,7 @@ class Infogath:
  
     def grabthebanner(self):
         try:
-            host = input("Enter Host: ")
+            host = self.siteconfig()
             port = int(input("Enter Port: "))
             sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sck.connect((host, port))
@@ -972,7 +1118,7 @@ class Infogath:
             pass
  
     def grabthebannerssl(self):
-        host = input("Enter Host: ")
+        host = self.siteconfig()
         port = int(input("Enter Port: "))
         try:
             sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -990,7 +1136,7 @@ class Infogath:
             print (Fore.RED + "Host is not reachable")
  
     def dirbrute(self):
-        host = input("Enter Website: ")
+        host = self.siteconfig()
         wordlist = input("Enter Wordlist: ")
         try:
             file = open(wordlist, 'r')
@@ -1034,7 +1180,7 @@ class Infogath:
  
     def dnslookup(self):
         try:
-            host = input("Enter Host: ")
+            host = self.siteconfig()
             print ("\n")
             info = dns.resolver.query(host, 'MX')
             for rdata in info:
@@ -1046,7 +1192,7 @@ class Infogath:
             print (Fore.RED + "Please use: site.com")
  
     def portscanner(self):
-        ip = input("Enter IP to scan: ")
+        ip = self.siteconfig()
         print ("\n")
         print ("Scanning IP: " + ip + " please wait..." + "\n")
         try:
@@ -1068,8 +1214,8 @@ class Infogath:
     def vulnerability(self):
         while True:
             print (Fore.RED + banner)
-           
-            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " Vulnerability Scan")
+            print (Fore.RED + "[" + Fore.CYAN + "0" + Fore.RED + "]" + Fore.WHITE + " Nikto")
+            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " Nmap")
             print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " Shellshock")
             print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " HeartBleed")
             print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " Drupageddon")
@@ -1081,6 +1227,10 @@ class Infogath:
  
             ipinfocolor = Fore.RED + "(" + Fore.CYAN + "Vulnerability Scan" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + ipinfocolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()
+            if prompt == "0":
+                self.nikto()
             if prompt == "1":
                 self.nmapvuln()
             if prompt == "2":
@@ -1106,15 +1256,13 @@ class Infogath:
             print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " DNS Enumeration")
             print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " FTP Anonymous Check")
             print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + " FTP User Enumeration")
-            print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + " Lookupsid")
-            print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + " Enum4Linux")
-            print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + " SMB Vuln Scanner")
             print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
             print ("\n")
  
             enumcolor = Fore.RED + "(" + Fore.CYAN + "Enumeration tools" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + enumcolor + Fore.WHITE + "# ")
- 
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 self.smtpenum()
             if prompt == "2":
@@ -1122,13 +1270,7 @@ class Infogath:
             if prompt == "3":
                 self.anonftp()
             if prompt == "4":
-                self.ftpuserenum()
-            if prompt =="5":
-                self.lookupsids()
-            if prompt == "6":
-                self.enumforlinux()
-            if prompt == "7":
-                self.smbvulnscan()          
+                self.ftpuserenum()      
             if prompt == "back":
                 self.start()
  
@@ -1147,6 +1289,8 @@ class Infogath:
  
             misccolor = Fore.RED + "(" + Fore.CYAN + "Miscellaneous" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + misccolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 self.portscanner()
             if prompt == "2":
@@ -1166,19 +1310,21 @@ class Infogath:
             print (Fore.RED + banner)
            
             print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + " IPv4 to IPv6")
-            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " IP Geolocation")
-            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " Shodan IP info")
+            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + " Shodan IP info")
+            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + " MyIP")
             print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
             print ("\n")
  
             ipinfocolor = Fore.RED + "(" + Fore.CYAN + "IP Information" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + ipinfocolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 self.ipv4tov6()
             if prompt == "2":
-                self.geolocation()
-            if prompt == "3":
                 self.shodansearch()
+            if prompt == "3":
+                self.myip()
             if prompt == "back":
                 self.start()
            
@@ -1187,27 +1333,17 @@ class Infogath:
         while True:
             print (Fore.RED + banner)
  
-            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  Banner Grabber")    
-            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Directory brute")    
-            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Subdomain brute")    
-            print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Reverse IP Lookup")
-            print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + "  Get robots.txt")      
-            print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + "  Whois lookup")    
-            print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + "  HTTP HEAD request")    
-            print (Fore.RED + "[" + Fore.CYAN + "8" + Fore.RED + "]" + Fore.WHITE + "  HTTP OPTIONS")        
-            print (Fore.RED + "[" + Fore.CYAN + "9" + Fore.RED + "]" + Fore.WHITE + "  DNS lookup")
-            print (Fore.RED + "[" + Fore.CYAN + "10" + Fore.RED + "]" + Fore.WHITE + " Find Admin Panel")
-            print (Fore.RED + "[" + Fore.CYAN + "11" + Fore.RED + "]" + Fore.WHITE + " Cloudflare Bypass")
-            print (Fore.RED + "[" + Fore.CYAN + "12" + Fore.RED + "]" + Fore.WHITE + " Wordpress Dir Finder")
-            print (Fore.RED + "[" + Fore.CYAN + "13" + Fore.RED + "]" + Fore.WHITE + " Reverse DNS Lookup")
-            print (Fore.RED + "[" + Fore.CYAN + "14" + Fore.RED + "]" + Fore.WHITE + " Find upload path")
-            print (Fore.RED + "[" + Fore.CYAN + "15" + Fore.RED + "]" + Fore.WHITE + " Find Shells")
-            print (Fore.RED + "[" + Fore.CYAN + "16" + Fore.RED + "]" + Fore.WHITE + " Website Status")
-            print (Fore.RED + "[" + Fore.CYAN + "17" + Fore.RED + "]" + Fore.WHITE + " Spider: Extract Links")
-            print (Fore.RED + "[" + Fore.CYAN + "18" + Fore.RED + "]" + Fore.WHITE + " Technology Discovery")
-            print (Fore.RED + "[" + Fore.CYAN + "19" + Fore.RED + "]" + Fore.WHITE + " Find Backup files")
-            print (Fore.RED + "[" + Fore.CYAN + "20" + Fore.RED + "]" + Fore.WHITE + " Session Cookies")
-            print (Fore.RED + "[" + Fore.CYAN + "21" + Fore.RED + "]" + Fore.WHITE + " CMS Detection")
+            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  Banner Grabber\t\t" + Fore.RED + "[" + Fore.CYAN + "11" + Fore.RED + "]" + Fore.WHITE + " Cloudflare Bypass")    
+            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Directory brute\t\t" + Fore.RED + "[" + Fore.CYAN + "12" + Fore.RED + "]" + Fore.WHITE + " Wordpress Dir Finder")
+            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Subdomain brute\t\t" + Fore.RED + "[" + Fore.CYAN + "13" + Fore.RED + "]" + Fore.WHITE + " Reverse DNS Lookup")
+            print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Reverse IP Lookup\t\t" + Fore.RED + "[" + Fore.CYAN + "14" + Fore.RED + "]" + Fore.WHITE + " Find Uploads")
+            print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + "  Get robots.txt\t\t" + Fore.RED + "[" + Fore.CYAN + "15" + Fore.RED + "]" + Fore.WHITE + " Find Shells")     
+            print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + "  Whois lookup\t\t" + Fore.RED + "[" + Fore.CYAN + "16" + Fore.RED + "]" + Fore.WHITE + " Website Status")    
+            print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + "  HTTP HEAD request\t\t" + Fore.RED + "[" + Fore.CYAN + "17" + Fore.RED + "]" + Fore.WHITE + " Spider: Extract Links")    
+            print (Fore.RED + "[" + Fore.CYAN + "8" + Fore.RED + "]" + Fore.WHITE + "  HTTP OPTIONS\t\t" + Fore.RED + "[" + Fore.CYAN + "18" + Fore.RED + "]" + Fore.WHITE + " Technology Discovery")        
+            print (Fore.RED + "[" + Fore.CYAN + "9" + Fore.RED + "]" + Fore.WHITE + "  DNS lookup\t\t\t" + Fore.RED + "[" + Fore.CYAN + "19" + Fore.RED + "]" + Fore.WHITE + " Find Backup files")
+            print (Fore.RED + "[" + Fore.CYAN + "10" + Fore.RED + "]" + Fore.WHITE + " Find Admin Panel\t\t" + Fore.RED + "[" + Fore.CYAN + "20" + Fore.RED + "]" + Fore.WHITE + " Session Cookies")
+            print (Fore.RED + "[" + Fore.CYAN + "22" + Fore.RED + "]" + Fore.WHITE + " Probe Domains\t\t" + Fore.RED + "[" + Fore.CYAN + "21" + Fore.RED + "]" + Fore.WHITE + " CMS Detection")
             print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
  
  
@@ -1215,6 +1351,8 @@ class Infogath:
            
             webinfocolor = Fore.RED + "(" + Fore.CYAN + "Web Information" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + webinfocolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 ask = input("HTTP or HTTPS? ")
                 if ask == "HTTPS":
@@ -1261,6 +1399,8 @@ class Infogath:
                 self.sessionscookies()
             if prompt == "21":
                 self.cmseek()
+            if prompt == "22":
+                self.httprobe()
             if prompt == "back":
                 self.start()
             if prompt == "exit":
@@ -1278,6 +1418,8 @@ class Infogath:
  
             windowshaxcolor = Fore.RED + "(" + Fore.CYAN + "Windows Exploitation" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + windowshaxcolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 self.windowsexploitation()
             if prompt == "2":
@@ -1296,6 +1438,8 @@ class Infogath:
             print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + "  Sublist3r")  
             print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + "  Knockpy")
             print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + "  Subfinder")
+            print (Fore.RED + "[" + Fore.CYAN + "8" + Fore.RED + "]" + Fore.WHITE + "  Rapiddns")  
+            print (Fore.RED + "[" + Fore.CYAN + "9" + Fore.RED + "]" + Fore.WHITE + "  SubOver")      
 
             print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
  
@@ -1303,6 +1447,8 @@ class Infogath:
  
             windowshaxcolor = Fore.RED + "(" + Fore.CYAN + "Subdomain Playground" + Fore.RED + ")"
             prompt = input(Fore.WHITE + "IGF~" + windowshaxcolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
             if prompt == "1":
                 self.subrute()
             if prompt == "2":
@@ -1317,8 +1463,106 @@ class Infogath:
                 self.knockpy()
             if prompt == "7":
                 self.subfinder()
+            if prompt == "8":
+                self.rapiddns()
+            if prompt == "9":
+                self.subover()
+            if prompt == "back":
+                self.start()  
+
+    def CMSPlayground(self):
+        while True:
+            print (Fore.RED + banner + "\n")
+            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  CMSeek")  
+            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  CMSmap") 
+            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Droopescan")  
+            print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  WPScan") 
+            print (Fore.RED + "[" + Fore.CYAN + "5" + Fore.RED + "]" + Fore.WHITE + "  JoomScan")  
+            print (Fore.RED + "[" + Fore.CYAN + "6" + Fore.RED + "]" + Fore.WHITE + "  JoomlaVS") 
+            print (Fore.RED + "[" + Fore.CYAN + "7" + Fore.RED + "]" + Fore.WHITE + "  JScanner")   
+
+            print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+ 
+            print ("\n")
+
+            self.siteconfig()
+            windowshaxcolor = Fore.RED + "(" + Fore.CYAN + "CMS Playground" + Fore.RED + ")"
+            prompt = input(Fore.WHITE + "IGF~" + windowshaxcolor + Fore.WHITE + "# ")
+            if prompt == "00":
+                self.config()            
+            if prompt == "1":
+                self.cmseek()
+            if prompt == "2":
+                self.spotter()
+            if prompt == "3":
+                self.certsh()
+            if prompt == "4":
+                self.amassdomain()
+            if prompt == "5":
+                self.sublister()
+            if prompt == "6":
+                self.knockpy()
+            if prompt == "7":
+                self.subfinder()
+            if prompt == "back":
+                self.start()      
+
+
+    def SmbPlayground(self):
+        while True:
+            print(Fore.RED + banner)
+            
+            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  Enum4Linux")  
+            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Lookupsids") 
+            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Smb Vuln Scan")      
+            print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Smb Client") 
+            print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+ 
+            print ("\n")
+ 
+            windowshaxcolor = Fore.RED + "(" + Fore.CYAN + "SMB Playground" + Fore.RED + ")"
+            prompt = input(Fore.WHITE + "IGF~" + windowshaxcolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
+            if prompt == "1":
+                self.enumforlinux()
+            if prompt == "2":
+                self.lookupsids()
+            if prompt == "3":
+                self.smbvulnscan()
+            if prompt == "4":
+                self.smbclient()
             if prompt == "back":
                 self.start()     
+
+    def DirectoryPlayground(self):
+        while True:
+            print(Fore.RED + banner)
+            
+            print (Fore.RED + "[" + Fore.CYAN + "1" + Fore.RED + "]" + Fore.WHITE + "  DirSearch")  
+            print (Fore.RED + "[" + Fore.CYAN + "2" + Fore.RED + "]" + Fore.WHITE + "  Dirb") 
+            print (Fore.RED + "[" + Fore.CYAN + "3" + Fore.RED + "]" + Fore.WHITE + "  Gobuster")    
+            print (Fore.RED + "[" + Fore.CYAN + "4" + Fore.RED + "]" + Fore.WHITE + "  Fuff")      
+
+            print (Fore.RED + "<" + Fore.CYAN +"--" + Fore.WHITE + " Back")
+ 
+            print ("\n")    
+ 
+            windowshaxcolor = Fore.RED + "(" + Fore.CYAN + "Directory Playground" + Fore.RED + ")"
+            prompt = input(Fore.WHITE + "IGF~" + windowshaxcolor + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()            
+            if prompt == "1":
+                self.dirsearch()
+            if prompt == "2":
+                self.dirb()
+            if prompt == "3":
+                self.smbvulnscan()
+            if prompt == "4":
+                self.fuff()
+            if prompt == "back":
+                self.start()         
+                               
                            
  
     def start(self):
@@ -1328,18 +1572,25 @@ class Infogath:
             print (Fore.RED + "\033[0;0mDiscord : gotr00t?".rjust(29, "=")+ "\n\n")
  
             print (Fore.RED + "[ " + Fore.CYAN + "IGF Menu" + Fore.RED + " ]" + "\n")
- 
-            print (Fore.RED + "[" + Fore.CYAN + "01" + Fore.RED + "] " + Fore.WHITE + "Website Information")
-            print (Fore.RED + "[" + Fore.CYAN + "02" + Fore.RED + "] " + Fore.WHITE + "IP Information")
+            self.displayconfig()
+            print("\n")
+            print (Fore.RED + "[" + Fore.CYAN + "01" + Fore.RED + "] " + Fore.WHITE + "Website Information\t\t" + Fore.RED + "[" + Fore.CYAN + "11" + Fore.RED + "] " + Fore.WHITE + "Wifi Hacking")
+            print (Fore.RED + "[" + Fore.CYAN + "02" + Fore.RED + "] " + Fore.WHITE + "IP Information\t\t\t" + Fore.RED + "[" + Fore.CYAN + "12" + Fore.RED + "] " + Fore.WHITE + "Tor")
             print (Fore.RED + "[" + Fore.CYAN + "03" + Fore.RED + "] " + Fore.WHITE + "Enumeration")
             print (Fore.RED + "[" + Fore.CYAN + "04" + Fore.RED + "] " + Fore.WHITE + "Windows Exploitation")
             print (Fore.RED + "[" + Fore.CYAN + "05" + Fore.RED + "] " + Fore.WHITE + "Subdomain Playground")
-            print (Fore.RED + "[" + Fore.CYAN + "06" + Fore.RED + "] " + Fore.WHITE + "Vulnerability Scan")
-            print (Fore.RED + "[" + Fore.CYAN + "07" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
+            print (Fore.RED + "[" + Fore.CYAN + "06" + Fore.RED + "] " + Fore.WHITE + "SMB Playground")
+            print (Fore.RED + "[" + Fore.CYAN + "07" + Fore.RED + "] " + Fore.WHITE + "Directory Playground")
+            print (Fore.RED + "[" + Fore.CYAN + "08" + Fore.RED + "] " + Fore.WHITE + "CMS Playground")
+            print (Fore.RED + "[" + Fore.CYAN + "09" + Fore.RED + "] " + Fore.WHITE + "Vulnerability Scan")
+            print (Fore.RED + "[" + Fore.CYAN + "10" + Fore.RED + "] " + Fore.WHITE + "Miscellaneous")
             print (Fore.RED + "[" + Fore.CYAN + "X" + Fore.RED + "] " + Fore.WHITE +  " EXIT")
  
             print ("\n")
-            prompt = input(Fore.WHITE + "IGF~#: ").lower()
+            startgui = Fore.RED + "(" + Fore.CYAN + "Main" + Fore.RED + ")"
+            prompt = input(Fore.WHITE + "IGF~" + startgui + Fore.WHITE + "# ")
+            if prompt == "config":
+                self.config()
             if prompt == "01":
                 self.webinfo()
             if prompt == "02":
@@ -1351,8 +1602,16 @@ class Infogath:
             if prompt == "05": 
                 self.SubdomainPlayground()
             if prompt == "06": 
-                self.vulnerability()
+                self.SmbPlayground()
             if prompt == "07":
+                self.DirectoryPlayground()
+            if prompt == "08":
+                self.CMSPlayground()
+            if prompt == "09":
+                self.vulnerability()
+            if prompt == "10":
                 self.miscellaneous()
+            if prompt == "12":
+                self.torghost()
             if "exit" or "x" in prompt.lower():
                 sys.exit(0)

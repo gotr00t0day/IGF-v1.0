@@ -55,7 +55,23 @@ pip3 install -r requirements.txt
 
 ./main.py
 
+(Change Domains: config domain.com)
+
 # UPDATES
+
+## IGF V1.8
+
+1. Added: A Config File
+   - Now you will be able to change to the domain that you want to pentest.
+   - This will work across the entire framework, meaning that all tools will use that specific domain.
+2. Added: TorGh0st
+3. Added: Dirb
+4. Added: FFUF
+5. Added: DirSearch
+6. Added: Sub0ver
+7. Added: RappidDNS
+8. Added: Httprobe
+9. Added: Nikto
 
 ## IGF V1.7
 

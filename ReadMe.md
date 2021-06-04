@@ -34,10 +34,6 @@
 
 ![alt text](https://github.com/gotr00t0day/IGF/blob/master/igf3.png)
 
-# V1.7
-![alt text](https://github.com/gotr00t0day/IGF/blob/master/igf17.png)
-
-
 ___________________________________________________________________________________________________________
 
 

@@ -121,7 +121,7 @@ class Infogath:
     def dirb(self):
         if which("dirb"):
             command = input("Dirb: ")
-            self.commands(f"dirb {command}")
+            self.commands(f"dirb {self.siteconfig}")
         else:
             install = input("Dirb is not installed, Do you want to install it??? (y/n): ").lower()
             if install == 'y':
@@ -158,7 +158,7 @@ class Infogath:
     
     def smbclient(self):
         if which("smbclient"):
-            cli = self.siteconfig()
+            cli = input("SmbClient: ")
             self.commands(f"smbclient {cli}")
         else:
             print(Fore.CYAN + "smbclient not found")
@@ -181,6 +181,10 @@ class Infogath:
     def rapiddns(self):
         rapiddnspath = os.path.abspath(os.getcwd())
         domain = self.siteconfig()
+        if "https://" in domain:
+            domain = domain.replace("https://", "")
+        if "http://" in domain:
+            domain = domain.replace("http://", "")  
         if path.exists(f"{rapiddnspath}/subdomainplayground/rapiddns.sh"):
             self.commands(f"bash {rapiddnspath}/subdomainplayground/rapiddns.sh {domain}")
         if not path.exists(f"{rapiddnspath}/subdomainplayground/rapiddns.sh"):
@@ -310,6 +314,10 @@ class Infogath:
         print("Checking to see if subfinder is installed..\n")
         if which("subfinder"):
             site = self.siteconfig()
+            if "https://" in site:
+                site = site.replace("https://", "")
+            if "http://" in site:
+                site = site.replace("http://", "")  
             self.commands("subfinder -d {}".format(site))       
         else:    
             install = input("subfinder isn't installed, you want to install it now?? y/n: ")
@@ -328,6 +336,11 @@ class Infogath:
         if which("sublist3r"):
             print (Fore.GREEN + "Sublist3r is already installed!!\n")
             site = self.siteconfig()
+            if "https://" in site:
+                site = site.replace("https://", "")
+            if "http://" in site:
+                site = site.replace("http://", "")
+            print(site)
             cmd = "sublist3r -d {}".format(site)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out, err = p.communicate()
@@ -363,10 +376,15 @@ class Infogath:
         if which("amass"):
             print(Fore.GREEN + "amass is already installed!\n")
             domain = self.siteconfig()
+            if "https://" in domain:
+                domain = domain.replace("https://", "")
+            if "http://" in domain:
+                site = domain.replace("http://", "")            
             cmd = "amass enum -passive -d {}".format(domain)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out, err = p.communicate()
-            out = out.decode()      
+            out = out.decode()
+            print(out)
             save = input("Do you want to save the ouput to a file?? y/n: ")
             if save == 'y':
                 with open("amassoutput.txt", "w") as f:
@@ -388,6 +406,10 @@ class Infogath:
     def spotter(self):
         print (Fore.CYAN + "bash code by nahamsec \n")
         site = self.siteconfig()
+        if "https://" in site:
+            site = site.replace("https://", "")
+        if "http://" in site:
+            site = site.replace("http://", "")          
         print(Fore.GREEN)
         cmd = "./subdomainplayground/spotter.sh {}".format(site)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -411,6 +433,10 @@ class Infogath:
     def certsh(self):
         print (Fore.CYAN + "bash code by nahamsec \n")
         site = self.siteconfig()
+        if "https://" in site:
+            site = site.replace("https://", "")
+        if "http://" in site:
+            site = site.replace("http://", "")  
         print(Fore.GREEN)
         cmd = "./subdomainplayground/certsh.sh {}".format(site)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -999,7 +1025,11 @@ class Infogath:
  
     def subrute(self):
         host = self.siteconfig()
-        wordlist = input("Enter Sub Domain list: ")
+        if "https://" in host:
+            host = host.replace("https://", "")
+        if "http://" in host:
+            host = host.replace("http://", "")  
+        wordlist = input("Enter SubDomain list: ")
         ua = UserAgent()
         header = {'User-Agent':str(ua.chrome)}
         try:
@@ -1181,6 +1211,10 @@ class Infogath:
     def dnslookup(self):
         try:
             host = self.siteconfig()
+            if "https://" in host:
+                host = host.replace("https://", "")
+            if "http://" in host:
+                host = host.replace("http://", "")  
             print ("\n")
             info = dns.resolver.query(host, 'MX')
             for rdata in info:
@@ -1192,7 +1226,7 @@ class Infogath:
             print (Fore.RED + "Please use: site.com")
  
     def portscanner(self):
-        ip = self.siteconfig()
+        ip = input("IP: ")
         print ("\n")
         print ("Scanning IP: " + ip + " please wait..." + "\n")
         try:
@@ -1567,6 +1601,7 @@ class Infogath:
  
     def start(self):
         while True:
+            nums = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "X"]
             print (Fore.RED + banner)
             print (Fore.RED + "\033[0;0mAuthor  : c0deninja".rjust(30, "="))
             print (Fore.RED + "\033[0;0mDiscord : gotr00t?".rjust(29, "=")+ "\n\n")
@@ -1613,5 +1648,9 @@ class Infogath:
                 self.miscellaneous()
             if prompt == "12":
                 self.torghost()
+            if prompt == "":
+                self.start()
+            if prompt not in nums:
+                self.start()
             if "exit" or "x" in prompt.lower():
                 sys.exit(0)

@@ -1601,7 +1601,7 @@ class Infogath:
  
     def start(self):
         while True:
-            nums = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "X"]
+            options = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "X"]
             print (Fore.RED + banner)
             print (Fore.RED + "\033[0;0mAuthor  : c0deninja".rjust(30, "="))
             print (Fore.RED + "\033[0;0mDiscord : gotr00t?".rjust(29, "=")+ "\n\n")
@@ -1650,7 +1650,7 @@ class Infogath:
                 self.torghost()
             if prompt == "":
                 self.start()
-            if prompt not in nums:
+            if prompt not in options:
                 self.start()
             if "exit" or "x" in prompt.lower():
                 sys.exit(0)
